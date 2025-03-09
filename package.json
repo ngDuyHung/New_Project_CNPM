@@ -1,0 +1,29 @@
+{
+  "name": "english-learning-app",
+  "version": "1.0.0",
+  "description": "English Learning Application with React and Node.js",
+  "scripts": {
+    "start:frontend": "cd frontend && npm start",
+    "start:backend": "cd backend && node src/index.js",
+    "build:frontend": "cd frontend && npm run build",
+    "install:all": "npm install && cd frontend && npm install && cd ../backend && npm install",
+    "heroku-postbuild": "cd frontend && npm install && npm run build && cd ../backend && npm install"
+  },
+  "engines": {
+    "node": ">=14.0.0",
+    "npm": ">=6.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "your-repository-url"
+  },
+  "keywords": [
+    "react",
+    "node",
+    "mysql",
+    "english",
+    "learning"
+  ],
+  "author": "Your Name",
+  "license": "MIT"
+} 
