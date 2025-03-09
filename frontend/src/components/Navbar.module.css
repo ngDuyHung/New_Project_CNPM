@@ -1,0 +1,122 @@
+.navbar {
+  transition: all 0.3s ease;
+}
+
+.desktop {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  padding: 20px;
+  background-color: #f8f9fa;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.mobile {
+  position: fixed;
+  top: 0;
+  left: -100%;
+  height: 100vh;
+  width: 250px;
+  background-color: #f8f9fa;
+  box-shadow: 2px 0 4px rgba(0,0,0,0.1);
+  transition: left 0.3s ease;
+  z-index: 50;
+  overflow-y: auto;
+}
+
+.mobileOpen {
+  left: 0;
+}
+
+.toggleButton {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 100;
+  padding: 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  display: none;
+}
+
+.link {
+  padding: 10px 20px;
+  text-decoration: none;
+  color: #333;
+  background-color: #fff;
+  border-radius: 5px;
+  transition: all 0.3s ease;
+  display: block;
+  margin: 5px 0;
+}
+
+.activeLink {
+  background-color: #007bff;
+  color: #fff;
+}
+
+/* Thêm overlay khi mobile menu mở */
+.overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 40;
+}
+
+.overlayVisible {
+  display: block;
+}
+
+/* Mobile styles */
+@media (max-width: 768px) {
+  .desktop {
+    display: none;
+  }
+  
+  .mobile {
+    display: flex;
+    flex-direction: column;
+    padding: 70px 15px 20px;
+    gap: 8px;
+  }
+
+  .linksContainer {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: 0 10px;
+  }
+  
+  .toggleButton {
+    display: block;
+  }
+  
+  .link {
+    width: calc(100% - 10px);
+    text-align: center;
+    margin: 4px 5px;
+  }
+
+  .separator {
+    width: 90%;
+    height: 1px;
+    background-color: rgba(0, 0, 0, 0.1);
+    margin: 15px auto;
+  }
+
+  .mobileHeader {
+    padding: 20px 15px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    margin-bottom: 10px;
+    text-align: center;
+    font-weight: bold;
+    color: #333;
+  }
+} 
