@@ -64,15 +64,5 @@
         "cache-control": "public, max-age=0, must-revalidate"
       }
     }
-  ],
-  "rewrites": [
-    {
-      "source": "/api/(.*)",
-      "destination": "/backend/src/index.js"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "/frontend/build/index.html"
-    }
   ]
 } 
