@@ -40,11 +40,18 @@
       "dest": "frontend/build/$1.$2"
     },
     {
-      "handle": "filesystem"
+      "src": "/((?!api/.*).*)",
+      "dest": "frontend/build/index.html"
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/backend/src/index.js"
     },
     {
-      "src": "/(.*)",
-      "dest": "frontend/build/index.html"
+      "source": "/(.*)",
+      "destination": "/frontend/build/index.html"
     }
   ]
 } 
