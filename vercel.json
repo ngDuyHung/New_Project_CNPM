@@ -17,15 +17,27 @@
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "backend/src/index.js"
+      "dest": "backend/src/index.js",
+      "headers": {
+        "Access-Control-Allow-Credentials": "true",
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET,OPTIONS,PATCH,DELETE,POST,PUT",
+        "Access-Control-Allow-Headers": "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization"
+      }
     },
     {
       "src": "/static/(.*)",
-      "dest": "frontend/build/static/$1"
+      "dest": "frontend/build/static/$1",
+      "headers": {
+        "cache-control": "public, max-age=31536000, immutable"
+      }
     },
     {
       "src": "/assets/(.*)",
-      "dest": "frontend/build/assets/$1"
+      "dest": "frontend/build/assets/$1",
+      "headers": {
+        "cache-control": "public, max-age=31536000, immutable"
+      }
     },
     {
       "src": "/favicon.ico",
@@ -37,11 +49,20 @@
     },
     {
       "src": "/(.*)\\.(?:json|css|js|jpg|jpeg|png|gif|ico|svg)",
-      "dest": "frontend/build/$1.$2"
+      "dest": "frontend/build/$1.$2",
+      "headers": {
+        "cache-control": "public, max-age=31536000, immutable"
+      }
     },
     {
-      "src": "/((?!api/.*).*)",
-      "dest": "frontend/build/index.html"
+      "handle": "filesystem"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "frontend/build/index.html",
+      "headers": {
+        "cache-control": "public, max-age=0, must-revalidate"
+      }
     }
   ],
   "rewrites": [
