@@ -9,12 +9,18 @@ const app = express();
 // CORS configuration
 const corsOptions = {
   origin: process.env.CORS_ORIGIN || '*',
+  credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization']
 };
 
 app.use(cors(corsOptions));
 app.use(express.json());
+
+// Health check endpoint
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok' });
+});
 
 // Routes
 app.use('/api', categoryRoutes);

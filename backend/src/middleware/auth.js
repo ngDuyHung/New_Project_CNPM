@@ -14,14 +14,14 @@ const auth = async (req, res, next) => {
     // Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     
-    // Lấy thông tin user bằng id
-    const users = await User.findByEmail(decoded.email);
-    if (users.length === 0) {
-      throw new Error('User not found');
+    // Lấy thông tin user
+    const user = await User.findById(decoded.userId);
+    if (!user) {
+      throw new Error();
     }
 
     // Gán thông tin user vào request
-    req.user = users[0];
+    req.user = user;
     req.token = token;
     
     next();

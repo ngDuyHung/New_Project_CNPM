@@ -30,7 +30,7 @@ const AuthLayout = ({ children }) => (
 const ProtectedRoute = ({ children }) => {
   const token = localStorage.getItem('token');
   if (!token) {
-    return <Navigate to="/login" replace />; // Kích hoạt lại chức năng bảo vệ route
+    return <Navigate to="/login" replace />; //mở lại để thực hiện đăng nhập 
   }
   return children;
 };
