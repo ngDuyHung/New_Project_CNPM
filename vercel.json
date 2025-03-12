@@ -20,11 +20,21 @@
       "dest": "backend/src/index.js"
     },
     {
+      "src": "/static/(.*)",
+      "dest": "frontend/build/static/$1",
+      "headers": {
+        "cache-control": "public, max-age=31536000, immutable"
+      }
+    },
+    {
       "handle": "filesystem"
     },
     {
       "src": "/(.*)",
       "dest": "/frontend/build/index.html"
     }
-  ]
+  ],
+  "env": {
+    "NODE_ENV": "production"
+  }
 } 
