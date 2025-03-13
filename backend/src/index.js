@@ -35,7 +35,11 @@ app.use(express.json());
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', environment: process.env.NODE_ENV });
+  res.json({ 
+    status: 'ok', 
+    environment: process.env.NODE_ENV,
+    timestamp: new Date().toISOString() // Thêm timestamp để debug
+  });
 });
 
 // Routes
@@ -59,4 +63,8 @@ app.listen(PORT, () => {
 });
 
 // Export for Vercel
+<<<<<<< HEAD
 module.exports = app;
+=======
+module.exports = app;
+>>>>>>> 67c62ede85ec37b98c043f2d30072853fd9b1ea6
