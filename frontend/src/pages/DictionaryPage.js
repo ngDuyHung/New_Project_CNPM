@@ -31,7 +31,7 @@ const DictionaryPage = () => {
       </div>
       <input
         type="text"
-        placeholder="Search vocabulary"
+        placeholder="Search vocabulary22"
         className="w-full p-3 border border-gray-300 rounded-md mb-3 mt-12"
         value={search}
         onChange={(e) => setSearch(e.target.value)}
@@ -71,60 +71,6 @@ const DictionaryPage = () => {
       )}
     </div>
   );
-}
-
-
-
-//   const [searchTerm, setSearchTerm] = useState('');
-
-//   return (
-//     <div className="p-3 md:p-5">
-
-
-//       {/* Search section */}
-//       <div className="mb-4">
-//         <div className="flex flex-col md:flex-row gap-2">
-//           <div className="flex-1">
-//             <input
-//               type="text"
-//               value={searchTerm}
-//               onChange={(e) => setSearchTerm(e.target.value)}
-//               placeholder="Search for a word..."
-//               className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-//             />
-//           </div>
-//           <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-200">
-//             Search
-//           </button>
-//         </div>
-//         <div className="mt-1 text-sm text-gray-500">
-//           Example: adventure, knowledge, experience aaa
-//         </div>
-//       </div>
-
-//       {/* Dictionary content */}
-//       <div>
-//         <div>
-//           <span>
-//             <strong>Word:</strong> adventure
-//           </span>
-//         </div>
-//         <h2 className="text-2xl font-semibold mb-2">Word: adventure</h2>
-//         <p>
-//           <strong>Part of speech:</strong> noun
-//         </p>
-//         <p>
-//           <strong>Definition:</strong> an unusual and exciting or daring experience
-//         </p>
-//         <p>
-//           <strong>Synonyms:</strong> experience, exploit, escapade, deed, feat, feat, happening
-//         </p>
-//         <p>
-//           <strong>Antonyms:</strong> inactivity, inaction, idleness
-//         </p>
-//       </div>
-//     </div>
-//   );
-// };
+};
 
 export default DictionaryPage; 
