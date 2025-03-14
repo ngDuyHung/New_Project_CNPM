@@ -9,6 +9,7 @@ import PracticePage from './pages/PracticePage';
 import ProgressPage from './pages/ProgressPage';
 import HistoryPage from './pages/HistoryPage';
 import { AuthProvider } from './context/AuthContext';
+import Footer from './components/Footer';
 
 // Component Layout có Navbar
 const MainLayout = ({ children }) => (
@@ -16,6 +17,7 @@ const MainLayout = ({ children }) => (
     <Navbar />
     <div className="flex-1 ml-0 md:ml-56 mt-12">
       {children}
+      <Footer />
     </div>
   </div>
 );
