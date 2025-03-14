@@ -31,7 +31,7 @@ const DictionaryPage = () => {
       </div>
       <input
         type="text"
-        placeholder="Search vocabulary22"
+        placeholder="Search vocabulary"
         className="w-full p-3 border border-gray-300 rounded-md mb-3 mt-12"
         value={search}
         onChange={(e) => setSearch(e.target.value)}
