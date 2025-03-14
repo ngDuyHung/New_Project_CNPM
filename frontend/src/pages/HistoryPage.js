@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Calendar } from 'lucide-react';
+
 
 const HistoryPage = () => {
   const [activityType, setActivityType] = useState('Vocabulary');
