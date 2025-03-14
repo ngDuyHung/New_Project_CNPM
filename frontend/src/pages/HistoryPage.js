@@ -90,9 +90,15 @@ const HistoryPage = () => {
 
   return (
     <div className="p-6 md:p-8 max-w-5xl mx-auto">
-      <div className="mb-4">
-        <h1 className="text-3xl font-bold text-gray-800 mb-4">Your Activity History</h1>
-        <input className="p-2" placeholder="Chau Quoc Kiet 15/3/2025 "></input>
+
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-800 mb-4">
+          Your Activity History - Chưa update 
+        </h1>
+        <p className="text-lg text-gray-600 text-red-500">
+        Đây là DEMO mẫu ae xem qua để biết rồi tiến hành xóa và code như đã thống nhất ở FIGMA.
+        </p>
+
       </div>
 
       <div className="flex">
