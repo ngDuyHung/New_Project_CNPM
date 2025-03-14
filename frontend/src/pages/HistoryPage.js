@@ -44,7 +44,7 @@ const HistoryPage = () => {
           Your Activity History - Chưa update 
         </h1>
         <p className="text-lg text-gray-600 text-red-500">
-        Đây là DEMO mẫu ae xem qua để biết rồi tiến hành xóa và code như đã thống nhất ở FIGMA.
+        Đây là DEMO mẫu ae xem qua để biết rồi tiến hành xóa và code như đã thống nhất ở FIGMA2222.
         </p>
       </div>
 
