@@ -6,7 +6,7 @@ const Footer = () => {
   return (
     <footer className="footer">
       <div className="container">
-        <center>Copyright ©Bản cập nhật lúc 14/03/2025 - Version 1.2.0</center>
+        <center>Cập nhật lúc 14/03/2025 - Version 1.2.0</center>
       </div>
     </footer>
   );
