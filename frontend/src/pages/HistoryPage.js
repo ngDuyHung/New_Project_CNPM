@@ -5,7 +5,7 @@ const HistoryPage = () => {
   const [activityType, setActivityType] = useState('Vocabulary');
   const [selectedDate, setSelectedDate] = useState('');
   const [datePickerOpen, setDatePickerOpen] = useState(false);
-  const [activities, setActivities] = useState([
+  const [activities] = useState([
     {
       id: 1,
       activity: 'Vocabulary Practice',
