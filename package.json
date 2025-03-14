@@ -25,5 +25,8 @@
     "learning"
   ],
   "author": "Your Name",
-  "license": "MIT"
-} 
+  "license": "MIT",
+  "dependencies": {
+    "lucide-react": "^0.479.0"
+  }
+}
