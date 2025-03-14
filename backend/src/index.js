@@ -63,6 +63,6 @@ app.listen(PORT, () => {
 });
 
 // Export for Vercel
-<<<<<<< HEAD
+
 module.exports = app;
 
