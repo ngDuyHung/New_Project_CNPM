@@ -31,9 +31,9 @@ const AuthLayout = ({ children }) => (
 
 const ProtectedRoute = ({ children }) => {
   const token = localStorage.getItem('token');
-  if (!token) {
-    return <Navigate to="/login" replace />; //mở lại để thực hiện đăng nhập 
-  }
+  // if (!token) {
+  //   return <Navigate to="/login" replace />; //mở lại để thực hiện đăng nhập 
+  // }
   return children;
 };
 
