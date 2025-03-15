@@ -29,27 +29,26 @@ const AuthLayout = ({ children }) => (
 
 const ProtectedRoute = ({ children }) => {
   const token = localStorage.getItem('token');
-  if (!token) {
-    return <Navigate to="/login" replace />; //mở lại để thực hiện đăng nhập 
-  }
+  //if (!token) {
+    //return <Navigate to="/login" replace />; //mở lại để thực hiện đăng nhập 
+  //}
   return children;
-};
+}; 
 
 function App() {
   return (
     <AuthProvider>
       <Router>
         <Routes>
-          {/* Route cho trang login - không có Navbar */}
+         {/* Route cho trang login - không có Navbar */}
           <Route 
-            path="/login" 
+           path="/login" 
             element={
               <AuthLayout>
                 <AuthPage />
               </AuthLayout>
-            } 
-          />
-          
+            }  
+           />       
           {/* Các route khác - có Navbar */}
           <Route
             path="/"
