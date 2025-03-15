@@ -19,7 +19,7 @@ const ProgressPage = () => {
         <ProgressCard title="Accurate" total={placeholderProgress.grammar.reading.listening} />
       </div>
       <div className="grid grid-cols-2 gap-5 p-5">
-        <ProgressCard title="Daily - new " total="0/5" />
+        <ProgressCard title="Daily" total="0/5" />
         <ProgressCard title="Badges" total={placeholderProgress.badges} />
       </div>
     </div>
