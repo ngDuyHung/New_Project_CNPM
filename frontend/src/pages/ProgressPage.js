@@ -15,8 +15,8 @@ const ProgressPage = () => {
     <div className="flex flex-col items-center gap-5 p-5">
       <div className="grid grid-cols-3 gap-5">
         <ProgressCard title="Total Word" total={placeholderProgress.vocabulary} />
-        <ProgressCard title="Total Work" total={placeholderProgress.grammar.reading.listening} />
-        <ProgressCard title="Accurate" total={placeholderProgress.grammar.reading.listening} />
+        <ProgressCard title="Total Work" total={placeholderProgress.listening} />
+        <ProgressCard title="Accurate" total={placeholderProgress.grammar} />
       </div>
       <div className="grid grid-cols-2 gap-5 p-5">
         <ProgressCard title="Daily" total="0/5" />
