@@ -1,6 +1,7 @@
 import React from 'react';
 
 const ProgressPage = () => {
+
   // Placeholder data (to be replaced by actual data from API) - Dữ liệu giả lập
   const placeholderProgress = {
     overallScore: 72,
@@ -37,8 +38,9 @@ function ProgressCard({ title, total }) {
       <p className="text-white text-lg italic mt-2">{total}%</p>
       <div className="flex flex-col items-center mt-auto "></div>
       <div className="w-[99%] h-3 bg-gray-300 bg-opacity-40 rounded-full relative mt-2"></div>
+
     </div>
   );
 }
 
-export default ProgressPage; 
+export default ProgressPage;
