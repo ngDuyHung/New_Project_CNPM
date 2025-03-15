@@ -1,7 +1,6 @@
 import React from 'react';
 
 const ProgressPage = () => {
-
   // Placeholder data (to be replaced by actual data from API) - Dữ liệu giả lập
   const placeholderProgress = {
     overallScore: 72,
@@ -16,8 +15,8 @@ const ProgressPage = () => {
     <div className="flex flex-col items-center gap-5 p-5">
       <div className="grid grid-cols-3 gap-5">
         <ProgressCard title="Total Word" total={placeholderProgress.vocabulary} />
-        <ProgressCard title="Total Work" total={placeholderProgress.grammar.reading.listening} />
-        <ProgressCard title="Accurate" total={placeholderProgress.grammar.reading.listening} />
+        <ProgressCard title="Total Work" total={placeholderProgress.listening} />
+        <ProgressCard title="Accurate" total={placeholderProgress.grammar} />
       </div>
       <div className="grid grid-cols-2 gap-5 p-5">
         <ProgressCard title="Daily" total="0/5" />
@@ -38,9 +37,8 @@ function ProgressCard({ title, total }) {
       <p className="text-white text-lg italic mt-2">{total}%</p>
       <div className="flex flex-col items-center mt-auto "></div>
       <div className="w-[99%] h-3 bg-gray-300 bg-opacity-40 rounded-full relative mt-2"></div>
-
     </div>
   );
 }
 
-export default ProgressPage;
+export default ProgressPage; 
