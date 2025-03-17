@@ -41,7 +41,10 @@ app.get('/api/health', (req, res) => {
     timestamp: new Date().toISOString() // Thêm timestamp để debug
   });
 });
-
+app.get('/ip', (req, res) => {
+  const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+  res.send(ip);
+});
 // Routes
 app.use('/api/categories', categoryRoutes);
 app.use('/api/auth', authRoutes);
