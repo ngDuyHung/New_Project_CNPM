@@ -7,6 +7,7 @@ const helmet = require('helmet');
 const compression = require('compression');
 const rateLimit = require('express-rate-limit');
 
+
 const app = express();
 
 // Security middlewares
@@ -33,15 +34,16 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 
-// Health check endpoint
-app.get('/api/health', (req, res) => {
-  res.json({ 
-    status: 'ok', 
-    environment: process.env.NODE_ENV,
-    timestamp: new Date().toISOString() // Thêm timestamp để debug
-  });
-});
 
+
+
+//Kiểm tra xem có kết nối với db được không 
+
+
+app.get('/ip', (req, res) => {
+  const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+  res.send(ip);
+});
 // Routes
 app.use('/api/categories', categoryRoutes);
 app.use('/api/auth', authRoutes);
