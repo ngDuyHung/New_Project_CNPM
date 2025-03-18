@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 const LandingPage = () => {
   const [activeTestimonial, setActiveTestimonial] = useState(0);
   const [isWakingServer, setIsWakingServer] = useState(false);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const navigate = useNavigate();
 
   const fadeInUp = {
@@ -36,16 +37,73 @@ const LandingPage = () => {
     }
   };
 
-  // Wake up server on page load
+  // Check if user is already logged in
+  const checkAuthStatus = async () => {
+    try {
+      setIsCheckingAuth(true);
+      
+      // Check for auth token in localStorage
+      const token = localStorage.getItem('token');
+      
+      if (token) {
+        // Verify token with backend
+        const response = await fetch('/api/auth/verify', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        
+        if (response.ok) {
+          // User is logged in, redirect to dashboard
+          navigate('/dashboard');
+          return;
+        } else {
+          // Token is invalid, remove it
+          localStorage.removeItem('token');
+        }
+      }
+    } catch (error) {
+      console.log('Error checking auth status:', error);
+    } finally {
+      setIsCheckingAuth(false);
+    }
+  };
+
+  // Wake up server and check auth on page load
   useEffect(() => {
-    wakeUpServer();
+    const initialize = async () => {
+      await wakeUpServer();
+      await checkAuthStatus();
+    };
+    
+    initialize();
   }, []);
 
   // Navigation with server wake up
-  const handleNavigation = (path) => {
-    wakeUpServer();
+  const handleNavigation = async (path) => {
+    setIsWakingServer(true);
+    await wakeUpServer();
+    
+    if (path === '/login' || path === '/register') {
+      // Store the redirect path for after login/register
+      sessionStorage.setItem('redirectAfterAuth', '/dashboard');
+    }
+    
     navigate(path);
+    setIsWakingServer(false);
   };
+
+  // If still checking auth, show nothing or a loading spinner
+  if (isCheckingAuth) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600">Đang tải...</p>
+        </div>
+      </div>
+    );
+  }
 
   // Testimonials data
   const testimonials = [
@@ -157,14 +215,16 @@ const LandingPage = () => {
             <button 
               onClick={() => handleNavigation('/login')}
               className="px-4 py-2 text-indigo-600 font-medium hover:text-indigo-800 transition-colors"
+              disabled={isWakingServer}
             >
-              Đăng nhập
+              {isWakingServer ? 'Đang xử lý...' : 'Đăng nhập'}
             </button>
             <button 
               onClick={() => handleNavigation('/register')}
               className="px-6 py-2 bg-indigo-600 text-white rounded-full hover:bg-indigo-700 transition-all duration-300 hover:shadow-lg"
+              disabled={isWakingServer}
             >
-              Đăng ký
+              {isWakingServer ? 'Đang xử lý...' : 'Đăng ký'}
             </button>
           </motion.div>
         </div>
@@ -197,16 +257,31 @@ const LandingPage = () => {
                 <button 
                   onClick={() => handleNavigation('/register')}
                   className="group px-8 py-3 bg-gradient-to-r from-indigo-600 to-blue-500 text-white text-center rounded-full hover:shadow-lg hover:scale-105 transition-all duration-300"
+                  disabled={isWakingServer}
                 >
-                  Bắt đầu học ngay
-                  <span className="ml-2 group-hover:translate-x-1 inline-block transition-transform">→</span>
+                  {isWakingServer ? (
+                    <>
+                      <span className="inline-block mr-2 animate-spin">⟳</span>
+                      Đang xử lý...
+                    </>
+                  ) : (
+                    <>
+                      Bắt đầu học ngay
+                      <span className="ml-2 group-hover:translate-x-1 inline-block transition-transform">→</span>
+                    </>
+                  )}
                 </button>
                 <button 
                   onClick={() => handleNavigation('/demo')}
                   className="px-8 py-3 border-2 border-indigo-600 text-indigo-600 rounded-full hover:bg-indigo-50 transition-all duration-300 hover:shadow-md flex items-center justify-center"
+                  disabled={isWakingServer}
                 >
-                  Xem Demo
-                  <i className="fas fa-play-circle ml-2"></i>
+                  {isWakingServer ? 'Đang xử lý...' : (
+                    <>
+                      Xem Demo
+                      <i className="fas fa-play-circle ml-2"></i>
+                    </>
+                  )}
                 </button>
               </motion.div>
 
@@ -561,8 +636,9 @@ const LandingPage = () => {
                         ? 'bg-white border-2 border-indigo-600 text-indigo-600 hover:bg-indigo-50'
                         : 'bg-indigo-600 text-white hover:bg-indigo-700 hover:shadow-lg'
                     }`}
+                    disabled={isWakingServer}
                   >
-                    {plan.buttonText}
+                    {isWakingServer ? 'Đang xử lý...' : plan.buttonText}
                   </button>
                 </div>
               </motion.div>
