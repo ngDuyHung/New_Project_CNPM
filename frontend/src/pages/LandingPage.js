@@ -55,7 +55,7 @@ const LandingPage = () => {
         
         if (response.ok) {
           // User is logged in, redirect to dashboard
-          navigate('/dashboard');
+          navigate('/home');
           return;
         } else {
           // Token is invalid, remove it
@@ -86,7 +86,7 @@ const LandingPage = () => {
     
     if (path === '/login' || path === '/register') {
       // Store the redirect path for after login/register
-      sessionStorage.setItem('redirectAfterAuth', '/dashboard');
+      sessionStorage.setItem('redirectAfterAuth', '/home');
     }
     
     navigate(path);
