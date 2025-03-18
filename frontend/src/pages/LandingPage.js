@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 
 const LandingPage = () => {
   const [activeTestimonial, setActiveTestimonial] = useState(0);
+  const [isWakingServer, setIsWakingServer] = useState(false);
+  const navigate = useNavigate();
 
   const fadeInUp = {
     initial: { opacity: 0, y: 20 },
@@ -17,6 +19,32 @@ const LandingPage = () => {
         staggerChildren: 0.2
       }
     }
+  };
+
+  // Function to wake up the server
+  const wakeUpServer = async () => {
+    try {
+      setIsWakingServer(true);
+      const response = await fetch('/api/health');
+      if (response.ok) {
+        console.log('Server is awake and ready');
+      }
+    } catch (error) {
+      console.log('Waking up the server...', error);
+    } finally {
+      setIsWakingServer(false);
+    }
+  };
+
+  // Wake up server on page load
+  useEffect(() => {
+    wakeUpServer();
+  }, []);
+
+  // Navigation with server wake up
+  const handleNavigation = (path) => {
+    wakeUpServer();
+    navigate(path);
   };
 
   // Testimonials data
@@ -126,18 +154,18 @@ const LandingPage = () => {
             animate={{ opacity: 1, x: 0 }}
             className="flex gap-4 items-center"
           >
-            <Link 
-              to="/login" 
+            <button 
+              onClick={() => handleNavigation('/login')}
               className="px-4 py-2 text-indigo-600 font-medium hover:text-indigo-800 transition-colors"
             >
               Đăng nhập
-            </Link>
-            <Link 
-              to="/register" 
+            </button>
+            <button 
+              onClick={() => handleNavigation('/register')}
               className="px-6 py-2 bg-indigo-600 text-white rounded-full hover:bg-indigo-700 transition-all duration-300 hover:shadow-lg"
             >
               Đăng ký
-            </Link>
+            </button>
           </motion.div>
         </div>
       </header>
@@ -166,17 +194,20 @@ const LandingPage = () => {
                 className="flex flex-col sm:flex-row gap-4"
                 variants={fadeInUp}
               >
-                <Link 
-                  to="/register" 
+                <button 
+                  onClick={() => handleNavigation('/register')}
                   className="group px-8 py-3 bg-gradient-to-r from-indigo-600 to-blue-500 text-white text-center rounded-full hover:shadow-lg hover:scale-105 transition-all duration-300"
                 >
                   Bắt đầu học ngay
                   <span className="ml-2 group-hover:translate-x-1 inline-block transition-transform">→</span>
-                </Link>
-                <Link to="/demo" className="px-8 py-3 border-2 border-indigo-600 text-indigo-600 rounded-full hover:bg-indigo-50 transition-all duration-300 hover:shadow-md flex items-center justify-center">
+                </button>
+                <button 
+                  onClick={() => handleNavigation('/demo')}
+                  className="px-8 py-3 border-2 border-indigo-600 text-indigo-600 rounded-full hover:bg-indigo-50 transition-all duration-300 hover:shadow-md flex items-center justify-center"
+                >
                   Xem Demo
                   <i className="fas fa-play-circle ml-2"></i>
-                </Link>
+                </button>
               </motion.div>
 
               {/* Stats Section */}
@@ -523,8 +554,8 @@ const LandingPage = () => {
                     ))}
                   </ul>
                   
-                  <Link
-                    to={plan.buttonLink}
+                  <button
+                    onClick={() => handleNavigation(plan.buttonLink)}
                     className={`block w-full py-3 px-4 rounded-full text-center font-semibold transition-all duration-300 ${
                       plan.secondary
                         ? 'bg-white border-2 border-indigo-600 text-indigo-600 hover:bg-indigo-50'
@@ -532,7 +563,7 @@ const LandingPage = () => {
                     }`}
                   >
                     {plan.buttonText}
-                  </Link>
+                  </button>
                 </div>
               </motion.div>
             ))}
@@ -558,12 +589,20 @@ const LandingPage = () => {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            <Link 
-              to="/register" 
+            <button
+              onClick={() => handleNavigation('/register')}
               className="px-8 py-4 bg-white text-indigo-600 rounded-full hover:shadow-lg transition-all duration-300 inline-block font-semibold"
+              disabled={isWakingServer}
             >
-              Bắt đầu học ngay
-            </Link>
+              {isWakingServer ? (
+                <>
+                  <span className="inline-block mr-2 animate-spin">⟳</span>
+                  Đang chuẩn bị...
+                </>
+              ) : (
+                'Bắt đầu học ngay'
+              )}
+            </button>
           </motion.div>
         </motion.div>
       </section>
