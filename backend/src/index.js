@@ -7,6 +7,7 @@ const helmet = require('helmet');
 const compression = require('compression');
 const rateLimit = require('express-rate-limit');
 
+const healthCheckRouter = require('./routes/healthCheckRoute');
 const app = express();
 
 // Security middlewares
@@ -43,8 +44,9 @@ app.get('/api/health', (req, res) => {
 });
 
 
-// server.js
-import healthCheckRouter from './routes/healthCheckRoute.js';
+//  Health check endpoints
+app.use('/api/health', healthCheckRouter); // Sử dụng router từ file riêng
+
 
 app.get('/ip', (req, res) => {
   const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
