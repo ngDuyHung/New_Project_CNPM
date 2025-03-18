@@ -42,7 +42,15 @@ function App() {
     <AuthProvider>
       <Router>
         <Routes>
-          {/* Route cho trang landing - không cần đăng nhập */}
+          {/* Route cho trang landing - không cần đăng nhập và là trang mặc định */}
+          <Route 
+            path="/" 
+            element={
+              <Navigate to="/landing.html" replace />
+            } 
+          />
+          
+          {/* Route cho phiên bản cũ của landing */}
           <Route 
             path="/landing" 
             element={
@@ -62,7 +70,7 @@ function App() {
           
           {/* Các route khác - có Navbar */}
           <Route
-            path="/"
+            path="/home"
             element={
               <ProtectedRoute>
                 <MainLayout>
@@ -127,6 +135,7 @@ function App() {
             }
           />
           
+          {/* Nếu không có route nào khớp, chuyển hướng đến landing page */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Router>
