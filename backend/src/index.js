@@ -41,6 +41,11 @@ app.get('/api/health', (req, res) => {
     timestamp: new Date().toISOString() // Thêm timestamp để debug
   });
 });
+
+
+// server.js
+import healthCheckRouter from './routes/healthCheckRoute.js';
+
 app.get('/ip', (req, res) => {
   const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
   res.send(ip);
