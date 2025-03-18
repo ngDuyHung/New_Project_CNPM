@@ -53,7 +53,7 @@ const Navbar = () => {
               <Bars3Icon className="h-5 w-5" />
             )}
           </button>
-          <h1 className="text-base md:text-lg font-bold">English Learning HDPTAK</h1>
+          <h1 className="text-base md:text-lg font-bold">English VocabMaster</h1>
         </div>
         
         <div className="flex items-center space-x-2 md:space-x-3">
