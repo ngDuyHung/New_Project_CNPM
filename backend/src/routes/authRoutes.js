@@ -85,4 +85,16 @@ router.get('/me', auth, async (req, res) => {
   res.json(req.user);
 });
 
+// Verify token
+router.get('/verify', auth, async (req, res) => {
+  try {
+    res.status(200).json({ 
+      message: 'Token is valid',
+      user: req.user
+    });
+  } catch (error) {
+    res.status(401).json({ message: 'Invalid token' });
+  }
+});
+
 module.exports = router; 
