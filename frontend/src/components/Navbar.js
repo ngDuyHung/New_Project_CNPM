@@ -14,7 +14,7 @@ import {
 } from '@heroicons/react/24/outline';
 
 const sidebarItems = [
-  { name: 'Home', path: '/', icon: HomeIcon },
+  { name: 'Home', path: '/home', icon: HomeIcon },
   { name: 'Dictionary', path: '/dictionary', icon: BookOpenIcon },
   { name: 'Practice', path: '/practice', icon: AcademicCapIcon },
   { name: 'Progress', path: '/progress', icon: ChartBarIcon },
