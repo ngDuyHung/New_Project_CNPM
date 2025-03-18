@@ -34,14 +34,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 
-// Health check endpoint
-app.get('/api/health', (req, res) => {
-  res.json({ 
-    status: 'ok', 
-    environment: process.env.NODE_ENV,
-    timestamp: new Date().toISOString() // Thêm timestamp để debug
-  });
-});
+
 
 
 //  Health check endpoints
