@@ -42,6 +42,14 @@ function App() {
     <AuthProvider>
       <Router>
         <Routes>
+          {/* Route cho trang landing - không cần đăng nhập */}
+          <Route 
+            path="/landing" 
+            element={
+              <Navigate to="/landing.html" replace />
+            } 
+          />
+          
           {/* Route cho trang login - không có Navbar */}
           <Route 
             path="/login" 
