@@ -14,7 +14,7 @@ const TopicCard = ({ title, words, onDelete, onEdit }) => {
     navigate(`/practice?topic=${encodeURIComponent(title)}`);
   };
   return (
-    <div className="bg-white p-4 rounded-lg shadow-md h-72 flex flex-col justify-center items-center text-center relative">
+    <div className="bg-white p-4 rounded-lg shadow-md flex flex-col justify-between h-72 text-center relative w-full max-w-xs mx-auto">
       <h3 className="text-lg font-semibold bg-yellow-400 p-2 rounded-t-md w-full text-center flex justify-center items-center relative">
         {title}
         <button 
@@ -27,17 +27,9 @@ const TopicCard = ({ title, words, onDelete, onEdit }) => {
           <p key={index}>{word}</p>
         ))}
       </div>
-      <div className="flex flex-col gap-2 w-full">
-      <button 
-          className="w-full h-12 bg-blue-500 text-white text-lg font-semibold rounded-md"
-          onClick={handleStart}
-        >
-          Start
-        </button>
-        <button 
-          className="w-full h-12 bg-gray-300 text-black text-lg font-semibold rounded-md"
-          onClick={onEdit}
-          >Edit</button>
+      <div className="flex flex-col gap-2 mt-2 w-full">
+        <button className="bg-blue-500 text-white py-2 rounded-md w-full" onClick={handleStart}>Start</button>
+        <button className="bg-gray-300 text-black py-2 rounded-md w-full" onClick={onEdit}>Edit</button>
           </div>
       </div>
   )
@@ -51,7 +43,7 @@ const App = () => {
 
     { title: "Food and Fruit", words: ["Everyday Meals (10 words)", "Cooking and Ingredients (10 words)", "Common Fruits (10 words)"] },
     { title: "Animals", words: ["Insects and Small Creatures (10 words)", "Wild Animal (10 words)", "Marine Animal (10 words)"] },
-    { title: "Travel and Tourism", words: ["Airport and Flight (10 words)", "Hotel and Accommodation (10 words)", "Tourists and Attractions (10 words)"] },
+    { title: "Travel and Tourism", words: ["Airport and Flight (10 words)", "Hotel and Accommodation (10 words)"] },
     { title: "Daily Communication", words: ["Greeting and Introductions (10 words)", "Asking for Directions (10 words)", "Shopping (10 words)"] },
     { title: "Life and Healthy", words: ["Going to the Doctors (10 words)", "Healthy Lifestyles (10 words)"] },
     { title: "Work and Business", words: ["Job (10 words)", "Workplace Communication (10 words)"] }
@@ -86,7 +78,7 @@ const App = () => {
   
 
   return (
-    <div className="flex bg-gray-100 min-h-screen">
+    <div className="flex flex-col items-center bg-gray-100 min-h-screen p-4 md:p-6">
       <div className="flex-1 p-6">
         <input className ="mb-6" placeholder="Tran Huy An 13/3/2025 "/>
         
@@ -95,15 +87,9 @@ const App = () => {
               onChange={(e) => setSearchTerm(e.target.value)} />
           <button className="bg-blue-500 text-white px-4 py-2 rounded-md"onClick={() => {}}>Search</button>
         </div>
-        <button 
-            className="bg-green-500 text-white px-6 py-3 text-sm md:text-base rounded border border-green-700 mb-6"
-            onClick={() => setIsCreateTopicVisible(true)}
-          >
-            + Create New Topic
-          </button>
+        <button className="bg-green-500 text-white px-6 py-2 rounded-md mb-4 w-full max-w-xs" onClick={() => setIsCreateTopicVisible(true)}>+ Create New Topic</button>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 w-full max-w-6xl">
           
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-
         {filteredTopics.map((topic, index) => (
           <TopicCard 
               key={index} 
@@ -152,18 +138,10 @@ const CreateTopic = ({ isVisible, onClose, onCreate, editingTopic, onSaveEdit })
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white p-6 rounded-lg shadow-md w-1/3">
-      <h2 className="text-xl font-bold">{editingTopic ? "Edit Topic" : "Create New Topic"}</h2>
-      {message && <p className="text-green-500 font-semibold">{message}</p>}
-
-        <input 
-          type="text" 
-          placeholder="Enter topic name..." 
-          className="w-full p-2 border rounded-md mt-2" 
-          value={topicName} 
-          onChange={(e) => setTopicName(e.target.value)} 
-        />
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 p-4">
+      <div className="bg-white p-6 rounded-lg shadow-md w-full max-w-xs text-center">
+      <h2 className="text-xl font-bold mb-4">{editingTopic ? "Edit Topic" : "Create New Topic"}</h2>
+        <input type="text" placeholder="Enter topic name..." className="w-full p-2 border rounded-md" value={topicName} onChange={(e) => setTopicName(e.target.value)} />
         {words.map((word, index) => (
           <div key={index} className="flex items-center gap-2 mt-2">
             <input 
@@ -180,9 +158,11 @@ const CreateTopic = ({ isVisible, onClose, onCreate, editingTopic, onSaveEdit })
             <button onClick={() => removeWord(index)} className="text-red-500 font-bold">X</button>
           </div>
         ))}
-        <button className="bg-green-500 text-white px-6 py-3 mt-3 rounded-md" onClick={addWord}>+ Add New Word</button>
-        <button className="bg-yellow-400 px-6 py-3 mt-3 ml-2 rounded-md" onClick={handleSave}>{editingTopic ? "Save Changes" : "Save"}</button>
-        <button className="bg-red-500 text-white px-4 py-2 mt-3 ml-2 rounded-md" onClick={onClose}>Close</button>
+        <button className="bg-green-500 text-white px-6 py-2 mt-4 rounded-md w-full" onClick={() => setWords([...words, ""])}>+ Add Word</button>
+        <div className="flex justify-between gap-4 mt-4">
+        <button className="bg-yellow-400 px-4 py-2 rounded-md w-1/2" onClick={handleSave}>{editingTopic ? "Save Changes" : "Save"}</button>
+        <button className="bg-red-500 text-white px-4 py-2 rounded-md w-1/2" onClick={onClose}>Close</button>
+        </div>
       </div>
     </div>
   );
