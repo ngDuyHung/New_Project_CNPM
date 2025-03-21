@@ -24,7 +24,9 @@ app.use(limiter);
 
 // CORS configuration
 const corsOptions = {
-  origin: 'http://localhost:3000', // Frontend URL
+   origin: process.env.NODE_ENV === 'production' 
+    ? process.env.CORS_ORIGIN 
+    : 'http://localhost:3000',
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization']
