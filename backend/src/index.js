@@ -3,11 +3,12 @@ const express = require('express');
 const cors = require('cors');
 const categoryRoutes = require('./routes/categoryRoutes');
 const authRoutes = require('./routes/authRoutes');
+const exerciseRoutes = require('./routes/exerciseRoutes');
+const practiceHistoryRoutes = require('./routes/practiceHistoryRoutes');
 const helmet = require('helmet');
 const compression = require('compression');
 const rateLimit = require('express-rate-limit');
 const db = require('./config/db');
-
 const app = express();
 
 // Security middlewares
@@ -23,9 +24,7 @@ app.use(limiter);
 
 // CORS configuration
 const corsOptions = {
-  origin: process.env.NODE_ENV === 'production' 
-    ? process.env.CORS_ORIGIN 
-    : 'http://localhost:3000',
+  origin: 'http://localhost:3000', // Frontend URL
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization']
@@ -126,6 +125,8 @@ app.get('/ip', (req, res) => {
 // Routes
 app.use('/api/categories', categoryRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/exercises', exerciseRoutes);
+app.use('/api/history', practiceHistoryRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
