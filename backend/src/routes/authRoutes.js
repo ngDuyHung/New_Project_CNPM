@@ -27,7 +27,6 @@ router.post('/register', async (req, res) => {
       email,
       password: hashedPassword
     });
-
     res.status(201).json({
       message: 'User registered successfully',
       userId: result.insertId
@@ -42,27 +41,27 @@ router.post('/register', async (req, res) => {
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
-
     // Tìm user
     const users = await User.findByEmail(email);
 
+    
     if (users.length === 0) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
-
+    
     const user = users[0];
-
     // Kiểm tra password
     const isValidPassword = await bcrypt.compare(password, user.password);
     if (!isValidPassword) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
+  
 
     // Tạo JWT token
     const token = jwt.sign(
       { userId: user.id, email: user.email },
       process.env.JWT_SECRET,
-      { expiresIn: '1h' }
+      { expiresIn: '2h' }
     );
 
     res.json({

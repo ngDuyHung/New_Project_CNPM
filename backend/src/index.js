@@ -1,3 +1,4 @@
+
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
@@ -9,6 +10,8 @@ const helmet = require('helmet');
 const compression = require('compression');
 const rateLimit = require('express-rate-limit');
 const db = require('./config/db');
+const topicRoutes = require("./routes/topicRoutes"); 
+
 const app = express();
 
 // Security middlewares
@@ -30,6 +33,7 @@ const corsOptions = {
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization']
+
 };
 
 app.use(cors(corsOptions));
@@ -125,10 +129,12 @@ app.get('/ip', (req, res) => {
   res.send(ip);
 });
 // Routes
+
 app.use('/api/categories', categoryRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/exercises', exerciseRoutes);
 app.use('/api/history', practiceHistoryRoutes);
+app.use("/api/topicRoutes", topicRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
@@ -170,15 +176,18 @@ app.use((err, req, res, next) => {
     requestId: req.id || Date.now().toString(),
     code: err.code || 'SERVER_ERROR'
   });
+
 });
 
 // Khởi động server cho mọi môi trường
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
+
   console.log(`Server is running on port ${PORT}`);
 });
 
 // Export for Vercel
 
 module.exports = app;
+
 
