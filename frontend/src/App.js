@@ -8,7 +8,9 @@ import DictionaryPage from './pages/DictionaryPage';
 import PracticePage from './pages/PracticePage';
 import ProgressPage from './pages/ProgressPage';
 import HistoryPage from './pages/HistoryPage';
+import LandingPage from './pages/LandingPage';
 import { AuthProvider } from './context/AuthContext';
+import Footer from './components/Footer';
 
 // Component Layout có Navbar
 const MainLayout = ({ children }) => (
@@ -16,6 +18,7 @@ const MainLayout = ({ children }) => (
     <Navbar />
     <div className="flex-1 ml-0 md:ml-56 mt-12">
       {children}
+      <Footer />
     </div>
   </div>
 );
@@ -30,7 +33,7 @@ const AuthLayout = ({ children }) => (
 const ProtectedRoute = ({ children }) => {
   const token = localStorage.getItem('token');
   if (!token) {
-    //return <Navigate to="/login" replace />;
+    return <Navigate to="/login" replace />; //mở lại để thực hiện đăng nhập 
   }
   return children;
 };
@@ -40,6 +43,12 @@ function App() {
     <AuthProvider>
       <Router>
         <Routes>
+          {/* Route cho landing page - không cần đăng nhập */}
+          <Route 
+            path="/" 
+            element={<LandingPage />} 
+          />
+          
           {/* Route cho trang login - không có Navbar */}
           <Route 
             path="/login" 
@@ -52,7 +61,7 @@ function App() {
           
           {/* Các route khác - có Navbar */}
           <Route
-            path="/"
+            path="/home"
             element={
               <ProtectedRoute>
                 <MainLayout>

@@ -1,0 +1,27 @@
+.footer {
+    background: #f8f9fa;
+    padding: 3rem;
+    margin-top: auto; /* Đẩy footer xuống cuối trang */
+    width: 100%;
+    display: flex; /* Sử dụng flexbox */
+    justify-content: center; /* Canh giữa theo chiều ngang */
+    align-items: center; /* Canh giữa theo chiều dọc */
+    text-align: center;
+  }
+  
+  .footer-container {
+    max-width: 1200px;
+    width: 100%;
+    padding: 0 15px;
+  }
+  
+  @media (max-width: 768px) {
+    .footer {
+      padding: 1rem;
+    }
+  
+    .footer-container {
+      width: 100%;
+    }
+  }
+  
