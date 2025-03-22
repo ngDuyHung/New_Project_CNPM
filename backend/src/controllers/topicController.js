@@ -46,15 +46,12 @@ const topicController = {
             const topicId = req.params.id; // Lấy ID trước
             const topicData = req.body.title; // Dữ liệu cập nhật
 
-            const topic = await Topic.update(topicId,topicData);
-    
-            if (!topic[0]) { 
-                return res.status(404).json({ message: "Topic not found" });
-            }
-    
+            const topic = await Topic.update(topicId, topicData);
+
+
             // Lấy lại dữ liệu sau khi cập nhật
             const updatedTopic = await Topic.findByPk(topicId);
-    
+
             res.status(200).json(updatedTopic);
         } catch (error) {
             res.status(400).json({ error: error.message });
@@ -64,11 +61,13 @@ const topicController = {
     // Delete a topic by ID
     deleteTopic: async (req, res) => {
         try {
-            const topic = await Topic.findByIdAndDelete(req.params.id);
+            const topic = await Topic.getById(req.body.id); // Lấy dữ liệu trước
             if (!topic) {
-                return res.status(404).send();
+                return res.status(404).json({ message: "Topic not found" });
             }
-            res.status(200).send(topic);
+
+            await Topic.delete(req.body.id);
+            return res.status(204).send();
         } catch (error) {
             res.status(500).send(error);
         }

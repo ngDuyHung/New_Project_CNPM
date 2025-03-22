@@ -11,6 +11,7 @@ const compression = require('compression');
 const rateLimit = require('express-rate-limit');
 const db = require('./config/db');
 const topicRoutes = require("./routes/topicRoutes"); 
+const vocabRoutes = require("./routes/vocabularyRoutes"); 
 
 const app = express();
 
@@ -129,12 +130,12 @@ app.get('/ip', (req, res) => {
   res.send(ip);
 });
 // Routes
-
+app.use("/api/vocabulary", vocabRoutes);
+app.use("/api/topics", topicRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/exercises', exerciseRoutes);
 app.use('/api/history', practiceHistoryRoutes);
-app.use("/api/topicRoutes", topicRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
