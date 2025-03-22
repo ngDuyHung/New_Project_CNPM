@@ -103,6 +103,7 @@ const exercise = {
             // Chỉ lấy chi tiết cho bài tập của user hiện tại
             const exercisesWithDetails = await Promise.all(
                 exercises.map(async (exercise) => {
+                    const exerciseId =exercise.id;
                     let details = [];
                     switch (exercise.type) {
                         case 'flashcard':
