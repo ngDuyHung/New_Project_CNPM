@@ -17,7 +17,6 @@ const progressController = {
             res.status(500).json({ success: false, message: 'Không thể kết nối tới Database!' });
         }
     },
-
     getProgressByUser: async (req, res) => {
         try {
             const userId = req.user.id;

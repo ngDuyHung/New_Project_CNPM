@@ -8,4 +8,5 @@ router.get('/', auth, badgeController.getBadgesByUser);
 router.delete('/:badgeId', auth, badgeController.deleteBadge);
 router.put('/:badgeId', auth, badgeController.updateBadge);
 
-module.exports = router; 
+
+module.exports = router;

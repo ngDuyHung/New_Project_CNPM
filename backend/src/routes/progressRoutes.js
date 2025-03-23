@@ -8,4 +8,5 @@ router.get('/', auth, progressController.getProgressByUser);
 router.put('/:progressId', auth, progressController.updateProgress);
 router.delete('/:progressId', auth, progressController.deleteProgress);
 
+
 module.exports = router; 

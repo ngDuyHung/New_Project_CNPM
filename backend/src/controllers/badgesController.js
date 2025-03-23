@@ -1,5 +1,4 @@
 const Badge = require('../models/badgesModel');
-
 const badgeController = {
     createBadge: async (req, res) => {
         try {

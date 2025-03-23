@@ -26,4 +26,5 @@ class Progress {
     }
 }
 
+
 module.exports = Progress; 
