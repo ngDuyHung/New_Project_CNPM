@@ -64,7 +64,7 @@ const progressController = {
         } catch (error) {
             console.error('Error deleting progress:', error);
             res.status(500).json({ success: false, message: 'Kết nối tới Database thất bại hoặc sai progressId!' });
-        }
+        } 
     }
 };
 
