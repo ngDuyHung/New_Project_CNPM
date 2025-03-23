@@ -15,7 +15,8 @@ class Topic {
             "SELECT * FROM topics WHERE topic_id = ?",
             [id]
         );
-        return result[0];
+
+        return result[0]?.length > 0 ? result[0][0] : null;
     }
 
     static async getAll() {
@@ -34,16 +35,17 @@ class Topic {
             console.log("Update successfully!");
         } catch (error) {
             console.error("Loi SQL: ", error);
-        }        
+        }
     }
 
     static async delete(id) {
-        await db.query(
-            "DELETE FROM topics WHERE id = ?",
-            [id]
-        );
+        await db.query("DELETE FROM vocabulary WHERE topic_id = 1;");
+        await db.query("DELETE FROM topics WHERE topic_id = ?", [id]);
     }
 
+    static async findByPk(id) {
+        return db.query("SELECT * FROM topics WHERE topic_id = ?", [id]);
+    }
 }
 
 module.exports = Topic;

@@ -21,13 +21,18 @@ CREATE TABLE IF NOT EXISTS topics (
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
--- CREATE TABLE IF NOT EXISTS topics (
---     topic_id INT AUTO_INCREMENT PRIMARY KEY,
---     user_id INT NOT NULL,
---     topic_name VARCHAR(255) NOT NULL UNIQUE,
---     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
---     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
--- );
+CREATE TABLE vocabulary (
+    word_id INT PRIMARY KEY AUTO_INCREMENT,
+    topic_id INT,
+    word VARCHAR(255) NOT NULL,
+    meaning VARCHAR(255) NOT NULL,
+    pronunciation VARCHAR(255),
+    image_path VARCHAR(255),
+    sound_path VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (topic_id) REFERENCES topics(topic_id) ON DELETE CASCADE
+);
+
 
 CREATE TABLE IF NOT EXISTS exercises (
     id INT AUTO_INCREMENT PRIMARY KEY,
