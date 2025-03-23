@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS topics (
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
-CREATE TABLE words (
+CREATE TABLE vocabulary (
     word_id INT PRIMARY KEY AUTO_INCREMENT,
     topic_id INT,
     word VARCHAR(255) NOT NULL,
