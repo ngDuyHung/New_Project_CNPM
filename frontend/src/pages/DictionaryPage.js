@@ -66,7 +66,7 @@ const DictionaryPage = () => {
     if (!item || !item.word) return false;
     return item.word.toLowerCase().includes(search.toLowerCase());
   }).sort((a, b) => {
-    // Sắp xếp theo thứ tự ABC
+    // Sắp xếp theo thứ tự ABCD
     return a.word.toLowerCase().localeCompare(b.word.toLowerCase());
   });
 
