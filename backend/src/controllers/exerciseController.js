@@ -98,14 +98,14 @@ const exercise = {
             const { topicId } = req.params;
             const userId = req.user.id;
             
-            const exercises = await Exercise.getExercisesByTopic(topicId, userId);
+            const exercises = await Exercise.getExercisesByTopic(topicId, userId,type);
             
             // Chỉ lấy chi tiết cho bài tập của user hiện tại
             const exercisesWithDetails = await Promise.all(
                 exercises.map(async (exercise) => {
                     const exerciseId =exercise.id;
                     let details = [];
-                    switch (exercise.type) {
+                    switch (type) {
                         case 'flashcard':
                             details = await Exercise.getFlashcardsByExercise(exerciseId, userId);
                             break;
