@@ -99,7 +99,7 @@ const exercise = {
             const type = req.type;
             const userId = req.user.id;
             
-            const exercises = await Exercise.getExercisesByTopic(topicId, userId,type);
+            const exercises = await Exercise.getExercisesByTopic(topicId, userId);
             
             // Chỉ lấy chi tiết cho bài tập của user hiện tại
             const exercisesWithDetails = await Promise.all(
