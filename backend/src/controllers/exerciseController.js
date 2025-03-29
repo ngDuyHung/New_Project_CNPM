@@ -96,7 +96,6 @@ const exercise = {
     getExercisesByTopic: async (req, res) => {
         try {
             const { topicId } = req.params;
-            const { type } = req.params;
             const userId = req.user.id;
             
             const exercises = await Exercise.getExercisesByTopic(topicId, userId);
@@ -104,8 +103,7 @@ const exercise = {
             // Chỉ lấy chi tiết cho bài tập của user hiện tại
             const exercisesWithDetails = await Promise.all(
                 exercises.map(async (exercise) => {
-                    const exerciseId =exercise.id;
-                    if (exercise.type  === type ) { 
+                    const exerciseId =exercise.id; 
                     let details = [];
                     switch (exercise.type) {
                         case 'flashcard':
@@ -121,7 +119,6 @@ const exercise = {
                             details = await Exercise.getVietByExercise(exerciseId, userId);
                             break;
                     }      
-                }
                     return { ...exercise, details };
                 })
             );
