@@ -105,9 +105,9 @@ const exercise = {
             const exercisesWithDetails = await Promise.all(
                 exercises.map(async (exercise) => {
                     const exerciseId =exercise.id;
+                    if (exercise.type  === type ) { 
                     let details = [];
-                    if (exercises.type  === type ) {
-                    switch (exercises.type) {
+                    switch (exercise.type) {
                         case 'flashcard':
                             details = await Exercise.getFlashcardsByExercise(exerciseId, userId);
                             break;
