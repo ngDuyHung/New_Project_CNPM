@@ -21,7 +21,31 @@ CREATE TABLE IF NOT EXISTS topics (
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
-CREATE TABLE words (
+-- Trigger to check if topic_name already exists for a user
+DELIMITER $$
+
+CREATE TRIGGER prevent_duplicate_topic
+BEFORE INSERT ON topics
+FOR EACH ROW
+BEGIN
+    DECLARE topic_count INT;
+
+    -- Kiểm tra xem topic_name đã tồn tại chưa
+    SELECT COUNT(*) INTO topic_count
+    FROM topics
+    WHERE topic_name = NEW.topic_name;
+
+    -- Nếu tồn tại (topic_count > 0) thì báo lỗi
+    IF topic_count > 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Topic name already exists!';
+    END IF;
+END $$
+
+DELIMITER ;
+--------------------------------------------------------------------
+
+CREATE TABLE vocabulary (
     word_id INT PRIMARY KEY AUTO_INCREMENT,
     topic_id INT,
     word VARCHAR(255) NOT NULL,

@@ -130,8 +130,8 @@ app.get('/ip', (req, res) => {
   res.send(ip);
 });
 // Routes
-app.use("/api/vocabulary", vocabRoutes);
-app.use("/api/topics", topicRoutes);
+app.use('/api/vocabulary', vocabRoutes);
+app.use('/api/topics', topicRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/exercises', exerciseRoutes);

@@ -1,4 +1,5 @@
 const Topic = require("../models/topicModel");
+const { use } = require("../routes/topicRoutes");
 
 const topicController = {
     //[POST] Create a new topic
@@ -19,7 +20,7 @@ const topicController = {
     //[GET] Get all topics
     getAllTopics: async (req, res) => {
         try {
-            const topics = await Topic.getAll({});
+            const [topics] = await Topic.getAll({});
             res.status(200).send(topics);
         } catch (error) {
             res.status(500).send(error);
@@ -48,7 +49,6 @@ const topicController = {
 
             const topic = await Topic.update(topicId, topicData);
 
-
             // Lấy lại dữ liệu sau khi cập nhật
             const updatedTopic = await Topic.findByPk(topicId);
 
@@ -68,6 +68,18 @@ const topicController = {
 
             await Topic.delete(req.body.id);
             return res.status(204).send();
+        } catch (error) {
+            res.status(500).send(error);
+        }
+    },
+
+    // Get all topics by user ID
+    getAllTopicsByUserId: async (req, res) => {
+        try {
+            const userId = req.body.user_id; // Lấy user_id từ body
+            console.log(userId); // Kiểm tra user_id
+            const topics = await Topic.getAllByUserId(userId); // Gọi model để lấy danh sách topic theo user_id
+            res.status(200).send(topics);
         } catch (error) {
             res.status(500).send(error);
         }

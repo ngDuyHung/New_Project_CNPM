@@ -1,17 +1,18 @@
 const db = require("../config/db");
+const User = require("./userModel");
 
 class Topic {
     static async create(topic) {
         const result = await db.query(
-            "INSERT INTO topics (topic_name) VALUES (?)",
-            [topic.title]
+            "INSERT INTO topics (topic_name,user_id) VALUES (?,?)",
+            [topic.title, topic.user_id]
         );
         console.log("Insert sucessfully!");
         return result.insertId;
     }
 
     static async getById(id) {
-        const result = await db.query(
+        const [result] = await db.query(
             "SELECT * FROM topics WHERE topic_id = ?",
             [id]
         );
@@ -20,9 +21,7 @@ class Topic {
     }
 
     static async getAll() {
-        const result = await db.query(
-            "SELECT * FROM topics"
-        );
+        const result = await db.query("SELECT * FROM topics");
         return result;
     }
 
@@ -45,6 +44,14 @@ class Topic {
 
     static async findByPk(id) {
         return db.query("SELECT * FROM topics WHERE topic_id = ?", [id]);
+    }
+
+    static async getAllByUserId(userId) {
+        const [result] = await db.query(
+            "SELECT * FROM topics WHERE user_id = ?",
+            [userId]
+        );
+        return result;
     }
 }
 

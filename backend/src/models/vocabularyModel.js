@@ -65,5 +65,12 @@ class VocabularyModel {
                 [id]
             );
         }
+    static async getVocabByTopicId(topicId) {
+        const [rows] = await db.query(
+            "SELECT * FROM vocabulary WHERE topic_id = ?",
+            [topicId]
+        );
+        return rows;
+    }
 }
 module.exports = VocabularyModel;
