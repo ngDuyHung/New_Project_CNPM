@@ -6,8 +6,7 @@ const auth = require('../middleware/auth');
 
 // Routes
 router.post('/', auth, exercise.createExercises);
-router.get('/topic/:topicId', auth, exercise.getExercisesByTopic);
-router.get('/:exerciseId', auth, exercise.getExerciseById);
+router.get('/topic/:topicId/:type', auth, exercise.getExercisesByTopic);
 router.put('/update/:id/:type', auth, exercise.updateExerciseContent);
 router.delete('/delete/:id/:type', auth, exercise.deleteExerciseContent);
 

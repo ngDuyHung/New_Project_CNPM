@@ -27,9 +27,9 @@ class Exercise {
         await db.query(query, [exerciseId, engWord, vieWord]);
     }
 
-    static async getExercisesByTopic(topicId, userId) {
-        const query = 'SELECT * FROM exercises WHERE topic_id = ? AND user_id = ?';
-        const [exercises] = await db.query(query, [topicId, userId]);
+    static async getExercisesByTopic(topicId, type, userId) {
+        const query = 'SELECT * FROM exercises WHERE topic_id = ? AND type = ? AND user_id = ?';
+        const [exercises] = await db.query(query, [topicId, type, userId]);
         return exercises;
     }
 
@@ -91,36 +91,6 @@ class Exercise {
         const query = 'DELETE FROM exercises WHERE id = ? AND user_id = ?';
         const [result] = await db.query(query, [exerciseId, userId]);
         return result.affectedRows > 0;
-    }
-
-    // Lấy chi tiết một bài tập
-    static async getExerciseById(exerciseId, userId) {
-        const query = 'SELECT * FROM exercises WHERE id = ? AND user_id = ?';
-        const [exercises] = await db.query(query, [exerciseId, userId]);
-        
-        if (exercises.length === 0) {
-            return null;
-        }
-
-        const exercise = exercises[0];
-        let details;
-
-        switch (exercise.type) {
-            case 'flashcard':
-                details = await Exercise.getFlashcardsByExercise(exerciseId, userId);
-                break;
-            case 'dienkhuyet':
-                details = await Exercise.getDienKhuyetByExercise(exerciseId, userId);
-                break;
-            case 'nghenoi':
-                details = await Exercise.getNgheNoiByExercise(exerciseId, userId);
-                break;
-            case 'viet':
-                details = await Exercise.getVietByExercise(exerciseId, userId);
-                break;
-        }
-
-        return { ...exercise, details };
     }
 
     // Update methods for specific exercise types
