@@ -21,6 +21,7 @@ CREATE TABLE IF NOT EXISTS topics (
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
+CREATE TABLE vocabulary (
 -- Trigger to check if topic_name already exists for a user
 DELIMITER $$
 
