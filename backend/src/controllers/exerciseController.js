@@ -96,6 +96,7 @@ const exercise = {
     getExercisesByTopic: async (req, res) => {
         try {
             const { topicId } = req.params;
+            const type = req.type;
             const userId = req.user.id;
             
             const exercises = await Exercise.getExercisesByTopic(topicId, userId,type);
