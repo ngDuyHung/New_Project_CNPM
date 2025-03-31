@@ -17,7 +17,7 @@ const vocabController = {
     // [GET] Get all topics
     getAllVocab: async (req, res) => {
         try {
-            const vocab = await VocabModel.getAll({});
+            const [vocab] = await VocabModel.getAll({});
             res.status(200).send(vocab);
         } catch (error) {
             res.status(500).send(error);
@@ -61,6 +61,18 @@ const vocabController = {
             }
             await VocabModel.delete(req.body.id);
             return res.status(204).send();
+        } catch (error) {
+            res.status(500).send(error);
+        }
+    },
+    GetAllByTopicId: async (req, res) => {
+        try {
+            const vocab = await VocabModel.getVocabByTopicId(req.body.topic_id);
+            console.log(vocab);
+            if (!vocab) {
+                return res.status(404).send();
+            }
+            res.status(200).send(vocab);
         } catch (error) {
             res.status(500).send(error);
         }
