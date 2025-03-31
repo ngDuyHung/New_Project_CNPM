@@ -9,6 +9,7 @@ import PracticePage from './pages/PracticePage';
 import ProgressPage from './pages/ProgressPage';
 import HistoryPage from './pages/HistoryPage';
 import LandingPage from './pages/LandingPage';
+import ConversationalAIPage from './pages/ConversationalAIPage';
 import { AuthProvider } from './context/AuthContext';
 import Footer from './components/Footer';
 
@@ -110,6 +111,17 @@ function App() {
               <ProtectedRoute>
                 <MainLayout>
                   <HistoryPage />
+                </MainLayout>
+              </ProtectedRoute>
+            }
+          />
+          
+          <Route
+            path="/conversational-ai"
+            element={
+              <ProtectedRoute>
+                <MainLayout>
+                  <ConversationalAIPage />
                 </MainLayout>
               </ProtectedRoute>
             }

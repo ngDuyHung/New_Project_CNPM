@@ -1,0 +1,45 @@
+# Conversational AI for English Practice
+
+Welcome to the Conversational AI feature, designed to help you improve your English speaking and listening skills through interactive conversations with an AI assistant.
+
+## Features
+
+### 1. Natural Conversation Practice
+Engage in natural, flowing conversations with our AI assistant to practice your English speaking skills in a pressure-free environment. The AI adapts to your level and provides helpful corrections without interrupting the flow of conversation.
+
+### 2. Topic-Based Learning
+Select from various topics to focus your conversation. Each topic comes with relevant vocabulary that the AI will naturally incorporate into your discussion, helping you expand your vocabulary in context.
+
+### 3. Vocabulary Enhancement
+The AI will introduce new words during your conversation and provide brief explanations for difficult terms, helping you build your vocabulary naturally through context.
+
+### 4. Persona Selection
+Practice conversation in different contexts by selecting various AI personas:
+- **English Teacher**: Focused on proper language use and gentle corrections
+- **Tourist Guide**: Great for travel vocabulary and cultural expressions
+- **Job Interviewer**: Practice professional language and interview questions
+- **Casual Friend**: Learn everyday expressions and informal language
+- **Business Partner**: Work on professional business communication
+
+### 5. Voice Features
+- Use your microphone to practice speaking
+- Listen to AI responses with text-to-speech to improve your listening comprehension
+- See a visual representation of the AI's "voice" with our animated avatar
+
+## How to Use
+
+1. **Select a Topic**: Choose a topic that interests you or aligns with your learning goals
+2. **Choose an AI Persona**: Select the type of conversation partner you want
+3. **Start Talking**: Type your message or use the microphone button to speak
+4. **Listen and Respond**: The AI will respond and you can continue the conversation
+5. **Practice Regularly**: Regular practice is key to improving your conversational skills
+
+## Tips for Effective Practice
+
+- **Be consistent**: Try to practice for at least 10-15 minutes each day
+- **Try different topics**: Expand your vocabulary across different subjects
+- **Use the voice features**: Speaking and listening are essential for real conversation skills
+- **Don't worry about mistakes**: The AI will help you improve naturally
+- **Review vocabulary**: Pay attention to new words the AI introduces
+
+Start a conversation now and take your English speaking skills to the next level! 

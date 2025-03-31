@@ -1,33 +1,52 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axiosInstance from '../api/axios';
 
-// Dữ liệu từ vựng
-const flashCardData = [
-  { 
-    word: 'Apple', 
-    meaning: 'Quả táo',
-    image: 'https://images.unsplash.com/photo-1570913149827-d2ac84ab3f9a?w=500&h=500&fit=crop'
-  },
-  { 
-    word: 'Banana', 
-    meaning: 'Quả chuối',
-    image: 'https://images.unsplash.com/photo-1543218024-57a70143c369?w=500&h=500&fit=crop'
-  },
-  { 
-    word: 'Orange', 
-    meaning: 'Quả cam',
-    image: 'https://images.unsplash.com/photo-1587735243615-c03f25aaff15?w=500&h=500&fit=crop'
-  },
-  { 
-    word: 'Grapes', 
-    meaning: 'Nho',
-    image: 'https://images.unsplash.com/photo-1516594798947-e65505dbb29d?w=500&h=500&fit=crop'
-  },
-  { 
-    word: 'Pineapple', 
-    meaning: 'Dứa',
-    image: 'https://images.unsplash.com/photo-1550258987-190a2d41a8ba?w=500&h=500&fit=crop'
+// Hàm lấy ảnh từ Google
+const getGoogleImage = async (searchTerm) => {
+  try {
+    const API_KEY = 'AIzaSyDZWnwLm6Ql-g3bOdZOqxBQHUDOZVzD0Ik'; // API key của Google
+    const CX = '2d618b61a6c5c4016'; // Search Engine ID
+
+    // Thêm từ khóa "illustration" để lấy hình ảnh minh họa đẹp hơn
+    const query = `${searchTerm} illustration`;
+
+    // Thử gọi API Google
+    try {
+      const response = await fetch(
+        `https://www.googleapis.com/customsearch/v1?` +
+        `key=${API_KEY}&` +
+        `cx=${CX}&` +
+        `q=${encodeURIComponent(query)}&` +
+        `searchType=image&` +
+        `num=1&` +
+        `safe=active&` + // Lọc nội dung an toàn
+        `imgSize=MEDIUM&` + // Kích thước ảnh vừa phải
+        `imgType=clipart` // Ưu tiên hình vẽ minh họa
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch image');
+      }
+
+      const data = await response.json();
+      console.log('Google Image Search Response:', data);
+
+      if (!data.items || data.items.length === 0) {
+        throw new Error('No image found');
+      }
+
+      return data.items[0].link;
+    } catch (error) {
+      console.error('Lỗi khi gọi Google API:', error);
+      // Nếu không lấy được ảnh từ Google, trả về ảnh mặc định
+      return `https://via.placeholder.com/300x300?text=${encodeURIComponent(searchTerm)}`;
+    }
+  } catch (error) {
+    console.error('Lỗi khi lấy ảnh:', error);
+    // Trả về ảnh mặc định nếu có lỗi
+    return `https://via.placeholder.com/300x300?text=${encodeURIComponent(searchTerm)}`;
   }
-];
+};
 
 // Dữ liệu bài tập điền khuyết
 const fillBlankData = [
@@ -61,11 +80,9 @@ const PracticePage = () => {
   const [fillBlankAnswer, setFillBlankAnswer] = useState('');
   const [userWriting, setUserWriting] = useState('');
   const [isFlipped, setIsFlipped] = useState(false);
-  // eslint-disable-next-line no-unused-vars
-  const [isListening, setIsListening] = useState(false);
   const [recognizedSpeech, setRecognizedSpeech] = useState('');
-  const [options, setOptions] = useState([]); // Options for fill-in-the-blank
-  const [selectedOption, setSelectedOption] = useState(null); // Track the selected option for fill-in-the-blank
+  const [options, setOptions] = useState([]);
+  const [selectedOption, setSelectedOption] = useState(null);
   const [recordingTime, setRecordingTime] = useState(0);
   const [isRecording, setIsRecording] = useState(false);
   const [interimTranscript, setInterimTranscript] = useState('');
@@ -77,6 +94,93 @@ const PracticePage = () => {
     listenSpeak: new Set(),
     writing: new Set()
   });
+
+  // State cho flashcard
+  const [flashCards, setFlashCards] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  // Gọi API khi component mount hoặc khi chọn tính năng flashcard
+  useEffect(() => {
+    let isSubscribed = true;
+
+    const getFlashcards = async () => {
+      if (activeFeature !== 'flash-card') return;
+
+      try {
+        setLoading(true);
+        setError(null);
+
+        const token = localStorage.getItem('token');
+        if (!token) {
+          setError('Vui lòng đăng nhập để xem flashcard');
+          return;
+        }
+
+        const response = await axiosInstance.get('/api/exercises/topic/1', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          },
+          params: {
+            type: 'flashcard'
+          }
+        });
+
+        if (!isSubscribed) return;
+
+        console.log('API Response:', response.data);
+
+        if (response.data && response.data.success && Array.isArray(response.data.data)) {
+          // Tìm exercise có type là flashcard
+          const flashcardExercise = response.data.data.find(ex => ex.type === 'flashcard');
+          console.log('Found flashcard exercise:', flashcardExercise);
+
+          if (flashcardExercise && Array.isArray(flashcardExercise.details)) {
+            const formattedData = await Promise.all(flashcardExercise.details.map(async card => {
+              // Lấy ảnh từ Google cho mỗi từ
+              const imageUrl = await getGoogleImage(card.eng_word);
+              return {
+                word: card.eng_word || '',
+                meaning: card.vie_word || '',
+                image: imageUrl || card.image_url || '' // Sử dụng ảnh từ Google hoặc fallback về ảnh từ database
+              };
+            }));
+
+            console.log('Formatted data:', formattedData);
+
+            if (formattedData.length > 0) {
+              setFlashCards(formattedData);
+              setFlashCardIndex(0);
+            } else {
+              setError('Không có dữ liệu flashcard.');
+            }
+          } else {
+            setError('Không tìm thấy bài tập flashcard.');
+          }
+        } else {
+          setError('Không có dữ liệu từ API.');
+        }
+      } catch (error) {
+        if (!isSubscribed) return;
+        console.error('Lỗi khi lấy dữ liệu flashcard:', error);
+        if (error.response?.status === 401) {
+          setError('Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.');
+        } else {
+          setError('Không thể tải dữ liệu flashcard. Vui lòng thử lại sau.');
+        }
+      } finally {
+        if (isSubscribed) {
+          setLoading(false);
+        }
+      }
+    };
+
+    getFlashcards();
+
+    return () => {
+      isSubscribed = false;
+    };
+  }, [activeFeature]); // Chỉ chạy lại khi activeFeature thay đổi
 
   // Phát âm khi bấm vào câu luyện nghe
   const handleSpeech = (text) => {
@@ -97,12 +201,12 @@ const PracticePage = () => {
   const checkSpeakingResult = (userSpeech) => {
     const correctAnswer = listeningData[listeningIndex].toLowerCase();
     const userAnswer = userSpeech.toLowerCase();
-    
+
     // Tính điểm dựa trên độ chính xác
     let score = 0;
     const words = correctAnswer.split(' ');
     const userWords = userAnswer.split(' ');
-    
+
     // Kiểm tra từng từ
     words.forEach(word => {
       if (userWords.includes(word)) {
@@ -112,7 +216,7 @@ const PracticePage = () => {
 
     // Tính tỷ lệ đúng
     const accuracy = (score / words.length) * 100;
-    
+
     // Tạo thông báo chi tiết
     let message = '';
     if (accuracy >= 80) {
@@ -147,7 +251,6 @@ const PracticePage = () => {
       recognition.maxAlternatives = 1;
 
       recognition.onstart = () => {
-        setIsListening(true);
         setIsRecording(true);
         const timer = startTimer();
         recognition.timer = timer;
@@ -174,13 +277,11 @@ const PracticePage = () => {
 
       recognition.onerror = (event) => {
         console.error('Speech recognition error', event.error);
-        setIsListening(false);
         setIsRecording(false);
         clearInterval(recognition.timer);
       };
 
       recognition.onend = () => {
-        setIsListening(false);
         setIsRecording(false);
         clearInterval(recognition.timer);
         if (recognizedSpeech) {
@@ -200,7 +301,6 @@ const PracticePage = () => {
       window.speechSynthesis.cancel();
     }
     setIsRecording(false);
-    setIsListening(false);
     if (recognizedSpeech) {
       checkSpeakingResult(recognizedSpeech);
     }
@@ -234,12 +334,12 @@ const PracticePage = () => {
   const checkWriting = () => {
     const correctAnswer = writingData[writingIndex].english.toLowerCase();
     const userAnswer = userWriting.toLowerCase();
-    
+
     // Tính điểm dựa trên độ chính xác
     let score = 0;
     const words = correctAnswer.split(' ');
     const userWords = userAnswer.split(' ');
-    
+
     // Kiểm tra từng từ
     words.forEach(word => {
       if (userWords.includes(word)) {
@@ -249,7 +349,7 @@ const PracticePage = () => {
 
     // Tính tỷ lệ đúng
     const accuracy = (score / words.length) * 100;
-    
+
     // Tạo thông báo chi tiết
     let message = '';
     if (accuracy >= 80) {
@@ -277,9 +377,9 @@ const PracticePage = () => {
   const generateFillBlankOptions = () => {
     // Lấy từ đúng cho câu hiện tại
     const correctWord = fillBlankData[fillBlankIndex].answer;
-    
+
     // Lọc ra các từ khác (không phải từ đúng)
-    const otherWords = flashCardData
+    const otherWords = flashCards
       .filter(word => word.word !== correctWord)
       .sort(() => Math.random() - 0.5) // Xáo trộn danh sách
       .slice(0, 3); // Chọn 3 từ ngẫu nhiên khác
@@ -294,7 +394,7 @@ const PracticePage = () => {
   const nextQuestion = () => {
     setIsFlipped(false);
     if (activeFeature === 'flash-card') {
-      setFlashCardIndex((prev) => (prev + 1) % flashCardData.length);
+      setFlashCardIndex((prev) => (prev + 1) % flashCards.length);
     } else if (activeFeature === 'fill-blank') {
       setFillBlankIndex((prev) => (prev + 1) % fillBlankData.length);
       setFillBlankAnswer('');
@@ -325,7 +425,7 @@ const PracticePage = () => {
 
   const previousQuestion = () => {
     if (activeFeature === 'flash-card') {
-      setFlashCardIndex((prev) => (prev - 1 + flashCardData.length) % flashCardData.length);
+      setFlashCardIndex((prev) => (prev - 1 + flashCards.length) % flashCards.length);
     } else if (activeFeature === 'fill-blank') {
       setFillBlankIndex((prev) => (prev - 1 + fillBlankData.length) % fillBlankData.length);
       setFillBlankAnswer('');
@@ -350,15 +450,15 @@ const PracticePage = () => {
       <h1 className="text-3xl font-bold text-gray-800 mb-4">Practice Your English</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
         {[{ id: 'flash-card', title: 'Flash Card', color: 'bg-blue-600' },
-          { id: 'fill-blank', title: 'Điền Khuyết', color: 'bg-green-600' },
-          { id: 'listen-speak', title: 'Luyện Nghe & Nói', color: 'bg-purple-600' },
-          { id: 'writing', title: 'Luyện Viết', color: 'bg-amber-600' }].map((item) => (
+        { id: 'fill-blank', title: 'Điền Khuyết', color: 'bg-green-600' },
+        { id: 'listen-speak', title: 'Luyện Nghe & Nói', color: 'bg-purple-600' },
+        { id: 'writing', title: 'Luyện Viết', color: 'bg-amber-600' }].map((item) => (
           <div key={item.id} className="bg-white rounded-lg shadow-md overflow-hidden">
             <div className={`h-40 ${item.color} flex items-center justify-center`}>
               <h2 className="text-2xl font-bold text-white">{item.title}</h2>
             </div>
             <div className="p-6">
-              <button 
+              <button
                 onClick={() => {
                   setActiveFeature(item.id);
                   if (item.id === 'fill-blank') {
@@ -382,46 +482,73 @@ const PracticePage = () => {
             {activeFeature === 'flash-card' && (
               <div>
                 <h2 className="text-xl font-bold mb-4">Flash Card</h2>
-                <p className="text-gray-600 mb-4">Câu {flashCardIndex + 1}/{flashCardData.length}</p>
-                <div 
-                  className="relative h-[400px] cursor-pointer"
-                  style={{ perspective: '1000px' }}
-                  onClick={() => setIsFlipped(!isFlipped)}
-                >
-                  <div 
-                    className={`relative w-full h-full transition-transform duration-500`}
-                    style={{ 
-                      transformStyle: 'preserve-3d',
-                      transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)'
-                    }}
-                  >
-                    <div 
-                      className="absolute w-full h-full bg-blue-100 rounded-lg shadow-lg flex flex-col items-center justify-center p-8"
-                      style={{ backfaceVisibility: 'hidden' }}
-                    >
-                      <img 
-                        src={flashCardData[flashCardIndex].image} 
-                        alt={flashCardData[flashCardIndex].word}
-                        className="w-48 h-48 object-cover rounded-lg mb-4"
-                      />
-                      <p className="text-2xl font-bold">{flashCardData[flashCardIndex].word}</p>
-                    </div>
-                    <div 
-                      className="absolute w-full h-full bg-green-100 rounded-lg shadow-lg flex flex-col items-center justify-center p-8"
-                      style={{ 
-                        backfaceVisibility: 'hidden',
-                        transform: 'rotateY(180deg)'
+                {loading ? (
+                  <div className="text-center py-4">Đang tải...</div>
+                ) : error ? (
+                  <div>
+                    <p className="text-red-500 mb-2">{error}</p>
+                    <button
+                      onClick={() => {
+                        setActiveFeature('flash-card');
+                        setFlashCardIndex(0);
                       }}
+                      className="bg-blue-500 text-white px-4 py-2 rounded-lg"
                     >
-                      <img 
-                        src={flashCardData[flashCardIndex].image} 
-                        alt={flashCardData[flashCardIndex].word}
-                        className="w-48 h-48 object-cover rounded-lg mb-4"
-                      />
-                      <p className="text-2xl font-bold">{flashCardData[flashCardIndex].meaning}</p>
-                    </div>
+                      Thử lại
+                    </button>
                   </div>
-                </div>
+                ) : flashCards.length > 0 ? (
+                  <>
+                    <p className="text-gray-600 mb-4">Câu {flashCardIndex + 1}/{flashCards.length}</p>
+                    <div
+                      className="relative h-[400px] cursor-pointer"
+                      style={{ perspective: '1000px' }}
+                      onClick={() => setIsFlipped(!isFlipped)}
+                    >
+                      <div
+                        className={`relative w-full h-full transition-transform duration-500`}
+                        style={{
+                          transformStyle: 'preserve-3d',
+                          transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)'
+                        }}
+                      >
+                        <div
+                          className="absolute w-full h-full bg-blue-100 rounded-lg shadow-lg flex flex-col items-center justify-center p-8"
+                          style={{ backfaceVisibility: 'hidden' }}
+                        >
+                          {flashCards[flashCardIndex].image && (
+                            <img
+                              src={flashCards[flashCardIndex].image}
+                              alt={flashCards[flashCardIndex].word}
+                              className="w-48 h-48 object-cover rounded-lg mb-4"
+                            />
+                          )}
+                          <p className="text-2xl font-bold">{flashCards[flashCardIndex].word}</p>
+                        </div>
+                        <div
+                          className="absolute w-full h-full bg-green-100 rounded-lg shadow-lg flex flex-col items-center justify-center p-8"
+                          style={{
+                            backfaceVisibility: 'hidden',
+                            transform: 'rotateY(180deg)'
+                          }}
+                        >
+                          {flashCards[flashCardIndex].image && (
+                            <img
+                              src={flashCards[flashCardIndex].image}
+                              alt={flashCards[flashCardIndex].word}
+                              className="w-48 h-48 object-cover rounded-lg mb-4"
+                            />
+                          )}
+                          <p className="text-2xl font-bold">{flashCards[flashCardIndex].meaning}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <div className="text-center py-4">
+                    Không có flashcard nào
+                  </div>
+                )}
               </div>
             )}
 
@@ -434,11 +561,10 @@ const PracticePage = () => {
 
                 <div className="grid grid-cols-2 gap-2 mb-4">
                   {options.map((option, index) => (
-                    <button 
-                      key={index} 
-                      className={`p-2 rounded-lg hover:bg-gray-300 ${
-                        selectedOption && selectedOption.word === option.word ? 'bg-blue-300' : 'bg-gray-200'
-                      }`}
+                    <button
+                      key={index}
+                      className={`p-2 rounded-lg hover:bg-gray-300 ${selectedOption && selectedOption.word === option.word ? 'bg-blue-300' : 'bg-gray-200'
+                        }`}
                       onClick={() => handleOptionClick(option)}
                     >
                       {option.word}
@@ -508,15 +634,15 @@ const PracticePage = () => {
                 <p className="text-gray-600 mb-4">Câu {writingIndex + 1}/{writingData.length}</p>
                 <p className="text-lg font-semibold mb-2">Viết câu tiếng Anh tương ứng:</p>
                 <p className="text-blue-600 mb-4">{writingData[writingIndex].vietnamese}</p>
-                <textarea 
-                  className="border p-2 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" 
-                  rows="3" 
-                  value={userWriting} 
+                <textarea
+                  className="border p-2 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  rows="3"
+                  value={userWriting}
                   onChange={(e) => setUserWriting(e.target.value)}
                   placeholder="Nhập câu tiếng Anh của bạn..."
                 ></textarea>
-                <button 
-                  onClick={checkWriting} 
+                <button
+                  onClick={checkWriting}
                   className="bg-amber-500 text-white px-4 py-2 rounded-lg mt-2 hover:opacity-80 transition duration-200"
                 >
                   Kiểm tra
@@ -536,9 +662,3 @@ const PracticePage = () => {
 };
 
 export default PracticePage;
-
-
-
-
-
-

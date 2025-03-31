@@ -114,3 +114,22 @@ CREATE TABLE IF NOT EXISTS practice_history (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 
 );
+
+CREATE TABLE IF NOT EXISTS badges (
+    badge_id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    badge_name VARCHAR(255) NOT NULL,
+    earned_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS progress (
+    progress_id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    words_learned INT DEFAULT 0,
+    exercises_completed INT DEFAULT 0,
+    badges TEXT,
+    last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+
+);

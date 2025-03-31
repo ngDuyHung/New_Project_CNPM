@@ -10,13 +10,15 @@ import {
   BellIcon,
   UserCircleIcon,
   Bars3Icon,
-  XMarkIcon
+  XMarkIcon,
+  ChatBubbleLeftRightIcon
 } from '@heroicons/react/24/outline';
 
 const sidebarItems = [
   { name: 'Home', path: '/home', icon: HomeIcon },
   { name: 'Dictionary', path: '/dictionary', icon: BookOpenIcon },
   { name: 'Practice', path: '/practice', icon: AcademicCapIcon },
+  { name: 'Conversational AI', path: '/conversational-ai', icon: ChatBubbleLeftRightIcon },
   { name: 'Progress', path: '/progress', icon: ChartBarIcon },
   { name: 'History', path: '/history', icon: ClockIcon },
 ];

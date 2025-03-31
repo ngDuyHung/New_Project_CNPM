@@ -1,4 +1,3 @@
-
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
@@ -12,6 +11,9 @@ const rateLimit = require('express-rate-limit');
 const db = require('./config/db');
 const topicRoutes = require("./routes/topicRoutes"); 
 const vocabRoutes = require("./routes/vocabularyRoutes"); 
+const badgeRoutes = require('./routes/badgesRoutes');
+const progressRoutes = require('./routes/progressRoutes');
+const conversationalAIRoutes = require('./routes/conversationalAIRoutes');
 
 const app = express();
 
@@ -136,6 +138,9 @@ app.use('/api/categories', categoryRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/exercises', exerciseRoutes);
 app.use('/api/history', practiceHistoryRoutes);
+app.use('/api/badges', badgeRoutes);
+app.use('/api/progress', progressRoutes);
+app.use('/api', conversationalAIRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

@@ -95,15 +95,14 @@ const exercise = {
     // Lấy danh sách bài tập theo topic
     getExercisesByTopic: async (req, res) => {
         try {
-            const { topicId } = req.params;
+            const { topicId, type } = req.params;
             const userId = req.user.id;
-            
-            const exercises = await Exercise.getExercisesByTopic(topicId, userId);
+            const exercises = await Exercise.getExercisesByTopic(topicId, type, userId);
             
             // Chỉ lấy chi tiết cho bài tập của user hiện tại
             const exercisesWithDetails = await Promise.all(
                 exercises.map(async (exercise) => {
-                    const exerciseId =exercise.id;
+                    const exerciseId =exercise.id; 
                     let details = [];
                     switch (exercise.type) {
                         case 'flashcard':
@@ -136,49 +135,6 @@ const exercise = {
         }
     },
 
-    // Lấy chi tiết một bài tập
-    getExerciseById: async (req, res) => {
-        try {
-            const { exerciseId } = req.params;
-            const userId = req.user.id;
-
-            const exercise = await Exercise.getExerciseById(exerciseId, userId);
-
-            if (!exercise) {
-                return res.status(404).json({
-                    success: false,
-                    message: 'Không tìm thấy bài tập'
-                });
-            }
-
-            let details = [];
-            switch (exercise.type) {
-                case 'flashcard':
-                    details = await Exercise.getFlashcardsByExercise(exerciseId, userId);
-                    break;
-                case 'dienkhuyet':
-                    details = await Exercise.getDienKhuyetByExercise(exerciseId, userId);
-                    break;
-                case 'nghenoi':
-                    details = await Exercise.getNgheNoiByExercise(exerciseId, userId);
-                    break;
-                case 'viet':
-                    details = await Exercise.getVietByExercise(exerciseId, userId);
-                    break;
-            }
-
-            res.status(200).json({
-                success: true,
-                data: { ...exercise, details }
-            });
-        } catch (error) {
-            console.error('Lỗi:', error);
-            res.status(500).json({
-                success: false,
-                message: 'Lỗi server'
-            });
-        }
-    },
 
     // Cập nhật bài tập
     updateExercise: async (req, res) => {
