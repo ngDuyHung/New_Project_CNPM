@@ -662,7 +662,7 @@ const App = () => {
   return (
     <div className="flex flex-col items-center bg-gray-100 min-h-screen p-4 md:p-6">
       <div className="flex-1 p-6 w-full max-w-6xl">
-        <input className="mb-6" placeholder="Tran Huy An 13/3/2025 " />
+        <input className="mb-6" placeholder="Tran Huy An 23/4/2025 " />
 
         <div className="flex w-full max-w-3xl gap-2 mb-6">
           <input
