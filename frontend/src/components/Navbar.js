@@ -33,6 +33,7 @@ const Navbar = () => {
   };
 
   const handleLogout = () => {
+    localStorage.clear();
     logout();
     navigate('/login');
   };
