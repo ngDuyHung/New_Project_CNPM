@@ -67,7 +67,8 @@ const vocabController = {
     },
     GetAllByTopicId: async (req, res) => {
         try {
-            const vocab = await VocabModel.getVocabByTopicId(req.body.topic_id);
+            console.log(req.query.topic_id);
+            const vocab = await VocabModel.getVocabByTopicId(req.query.topic_id);
             console.log(vocab);
             if (!vocab) {
                 return res.status(404).send();

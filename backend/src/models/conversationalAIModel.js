@@ -1,9 +1,11 @@
-const { GoogleGenerativeAI } = require('@google/generative-ai');
+const { GoogleGenAI } = require('@google/genai'); // Đảm bảo import đúng thư viện
 const TopicModel = require('./topicModel');
 const db = require('../config/db');
 
 // Initialize the API client with API key
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || 'YOUR_API_KEY');
+const genAI = new GoogleGenAI({
+  apiKey: process.env.GEMINI_API_KEY || 'YOUR_API_KEY', // Đảm bảo API key hợp lệ
+});
 
 class ConversationalAI {
   static async generateResponse(message, topicId, persona) {
@@ -88,6 +90,60 @@ class ConversationalAI {
     }
   }
 
+  static async generateFillInTheBlankWithGemi(word, meaning) {
+    try {
+      const prompt = `Create a fill-in-the-blank exercise for the word "${word}" with the meaning "${meaning}".
+      The response should be formatted as a JSON object with the following keys:
+      - "sentence": A sentence with a blank where the word fits.
+      - "correctAnswer": The correct word that fits the blank.
+      - "options": A list of 4 options, including 4 incorrect answers.
+      Ensure the response is a valid JSON object without any additional formatting or Markdown.`;
+      const result = await genAI.models.generateContent({
+        model: 'gemini-2.0-flash',
+        contents: prompt,
+      });
+      
+      const text = result.text; // Truy cập phản hồi từ API
+      console.log('Raw response from Gemini API:', text);
+      if (text) {
+        try {
+          // Loại bỏ các ký tự không mong muốn
+          const cleanedText = text.replace(/```json|```/g, '').trim();
+      
+          const data = JSON.parse(cleanedText);
+      
+          // Validate the response format
+          if (
+            data &&
+            typeof data.sentence === 'string' &&
+            typeof data.correctAnswer === 'string' &&
+            Array.isArray(data.options) &&
+            data.options.length === 4 &&
+            data.options.every(option => typeof option === 'string')
+          ) {
+            return {
+              sentence: data.sentence,
+              correctAnswer: data.correctAnswer,
+              options: data.options,
+            };
+          } else {
+            console.error('Invalid response format from Gemini API:', data);
+            return null;
+          }
+        } catch (error) {
+          console.error('Error parsing JSON response from Gemini:', error, text);
+          return null;
+        }
+      } else {
+        console.warn('No text content in the response from Gemini.');
+        return null;
+      }
+    } catch (error) {
+      console.error('Error generating fill-in-the-blank with Gemini:', error);
+      return null;
+    }
+  }
+
   static getPersonaContext(persona) {
     const personas = {
       'teacher': `
@@ -119,6 +175,17 @@ class ConversationalAI {
 
     return personas[persona] || personas['teacher'];
   }
+
+  static async listAvailableModels() {
+    try {
+      const models = await genAI.models.listModels();
+      console.log('Available models:', models);
+    } catch (error) {
+      console.error('Error listing models:', error);
+    }
+  }
+
 }
 
-module.exports = ConversationalAI; 
+
+module.exports = ConversationalAI;

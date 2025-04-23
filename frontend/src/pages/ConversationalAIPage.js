@@ -724,30 +724,30 @@ const ConversationalAIPage = () => {
             <option value="">No specific topic (AI will choose randomly)</option>
             
             {/* Demo topics */}
-            {topics && topics.some(t => t.topic_id && t.topic_id.startsWith('demo')) && (
-              <optgroup label="Demo Topics">
-                {topics
-                  .filter(topic => topic.topic_id && topic.topic_id.startsWith('demo'))
-                  .map((topic) => (
-                    <option key={topic.topic_id} value={topic.topic_id}>
-                      {topic.topic_name}
-                    </option>
-                  ))}
-              </optgroup>
-            )}
-            
-            {/* Real topics */}
-            {topics && topics.some(t => t.topic_id && !t.topic_id.startsWith('demo')) && (
-              <optgroup label="Your Topics">
-                {topics
-                  .filter(topic => topic.topic_id && !topic.topic_id.startsWith('demo'))
-                  .map((topic) => (
-                    <option key={topic.topic_id} value={topic.topic_id}>
-                      {topic.topic_name}
-                    </option>
-                  ))}
-              </optgroup>
-            )}
+{topics && topics.some(t => String(t.topic_id).startsWith('demo')) && (
+  <optgroup label="Demo Topics">
+    {topics
+      .filter(topic => String(topic.topic_id).startsWith('demo'))
+      .map((topic) => (
+        <option key={topic.topic_id} value={topic.topic_id}>
+          {topic.topic_name}
+        </option>
+      ))}
+  </optgroup>
+)}
+
+{/* Real topics */}
+{topics && topics.some(t => !String(t.topic_id).startsWith('demo')) && (
+  <optgroup label="Your Topics">
+    {topics
+      .filter(topic => !String(topic.topic_id).startsWith('demo'))
+      .map((topic) => (
+        <option key={topic.topic_id} value={topic.topic_id}>
+          {topic.topic_name}
+        </option>
+      ))}
+  </optgroup>
+)}
           </select>
           
           {!selectedTopic && (
