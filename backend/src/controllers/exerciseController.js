@@ -224,14 +224,14 @@ const exercise = {
                     break;
 
                 case 'dienkhuyet':
-                    const { sentence, correctAnswer, answer1, answer2, answer3 } = content;
-                    if (!sentence || !correctAnswer || !answer1 || !answer2 || !answer3) {
+                    const { sentence, correctAnswer, answer1, answer2, answer3,answer4 } = content;
+                    if (!sentence || !correctAnswer || !answer1 || !answer2 || !answer3 || !answer4) {
                         return res.status(400).json({
                             success: false,
                             message: 'Thiếu thông tin cần thiết cho điền khuyết'
                         });
                     }
-                    await Exercise.updateDienKhuyet(id, sentence, correctAnswer, answer1, answer2, answer3, userId);
+                    await Exercise.updateDienKhuyet(id, sentence, correctAnswer, answer1, answer2, answer3,answer4, userId);
                     break;
 
                 case 'nghenoi':

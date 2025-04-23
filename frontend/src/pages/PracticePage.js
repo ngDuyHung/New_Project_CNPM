@@ -1,60 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axiosInstance from '../api/axios';
+import { useSearchParams } from 'react-router-dom';
 
-// Hàm lấy ảnh từ Google
-const getGoogleImage = async (searchTerm) => {
-  try {
-    const API_KEY = 'AIzaSyDZWnwLm6Ql-g3bOdZOqxBQHUDOZVzD0Ik'; // API key của Google
-    const CX = '2d618b61a6c5c4016'; // Search Engine ID
 
-    // Thêm từ khóa "illustration" để lấy hình ảnh minh họa đẹp hơn
-    const query = `${searchTerm} illustration`;
 
-    // Thử gọi API Google
-    try {
-      const response = await fetch(
-        `https://www.googleapis.com/customsearch/v1?` +
-        `key=${API_KEY}&` +
-        `cx=${CX}&` +
-        `q=${encodeURIComponent(query)}&` +
-        `searchType=image&` +
-        `num=1&` +
-        `safe=active&` + // Lọc nội dung an toàn
-        `imgSize=MEDIUM&` + // Kích thước ảnh vừa phải
-        `imgType=clipart` // Ưu tiên hình vẽ minh họa
-      );
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch image');
-      }
-
-      const data = await response.json();
-      console.log('Google Image Search Response:', data);
-
-      if (!data.items || data.items.length === 0) {
-        throw new Error('No image found');
-      }
-
-      return data.items[0].link;
-    } catch (error) {
-      console.error('Lỗi khi gọi Google API:', error);
-      // Nếu không lấy được ảnh từ Google, trả về ảnh mặc định
-      return `https://via.placeholder.com/300x300?text=${encodeURIComponent(searchTerm)}`;
-    }
-  } catch (error) {
-    console.error('Lỗi khi lấy ảnh:', error);
-    // Trả về ảnh mặc định nếu có lỗi
-    return `https://via.placeholder.com/300x300?text=${encodeURIComponent(searchTerm)}`;
-  }
-};
-
-// Dữ liệu bài tập điền khuyết
-const fillBlankData = [
-  { sentence: 'I have an ___ (fruit).', answer: 'Apple' },
-  { sentence: 'He is eating a ___ (yellow fruit).', answer: 'Banana' },
-  { sentence: 'She is drinking ___ juice. (fruit)', answer: 'Orange' },
-  { sentence: 'This is a tropical fruit, it is ___ (tropical fruit)', answer: 'Pineapple' }
-];
 
 // Dữ liệu bài tập luyện nghe
 const listeningData = [
@@ -72,6 +21,7 @@ const writingData = [
 ];
 
 const PracticePage = () => {
+  const [topic_Id, setTopicId] = useState(null); // State để lưu topic_id
   const [activeFeature, setActiveFeature] = useState(null);
   const [flashCardIndex, setFlashCardIndex] = useState(0);
   const [fillBlankIndex, setFillBlankIndex] = useState(0);
@@ -88,6 +38,11 @@ const PracticePage = () => {
   const [interimTranscript, setInterimTranscript] = useState('');
   const [correctAnswers, setCorrectAnswers] = useState(0);
   const [speakingScore, setSpeakingScore] = useState(0);
+  const [listeningData, setListeningData] = useState([]); // State để lưu dữ liệu bài tập luyện nói
+  const [writingData, setWritingData] = useState([]); // State để lưu dữ liệu bài tập luyện viết
+  
+  const[exercise_Id, setExerciseId] = useState(null); // ID của exercise bài tập
+  const [topic_Name, setTopicName] = useState(null); // Tên chủ đề bài tập
   const [correctQuestions, setCorrectQuestions] = useState({
     flashCard: new Set(),
     fillBlank: new Set(),
@@ -99,12 +54,110 @@ const PracticePage = () => {
   const [flashCards, setFlashCards] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const topicId = 1; // Example topic ID
+
+  // State cho điền khuyết
+  const [fillBlankData, setFillBlankData] = useState([]); // State để lưu dữ liệu bài tập điền khuyết
+
+
+  useEffect(() => {
+    const fetchFillBlankData = async () => {
+      if (activeFeature !== 'fill-blank') return;
+    
+      try {
+        setLoading(true);
+        setError(null);
+    
+        const token = localStorage.getItem('token');
+        if (!token) {
+          setError('Vui lòng đăng nhập để xem bài tập điền khuyết');
+          setLoading(false);
+          return;
+        }
+    
+        // Gọi API để lấy dữ liệu bài tập điền khuyết
+        const response = await axiosInstance.get(`/api/exercises/topic/${topic_Id}/dienkhuyet`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+    
+        console.log('Response Data:', response.data);
+        setExerciseId(response.data.data[0]?.id); // Lưu exercise_Id từ response
+        
+        const details = response.data.data[0]?.details;
+        console.log('Details:', response.data.data[0]?.details);
+        if (!Array.isArray(details) || details.length === 0) {
+          console.warn('Không có dữ liệu chi tiết trong bài tập điền khuyết.');
+          setError('Không có dữ liệu bài tập điền khuyết.');
+          return;
+        }
+    
+        const formattedData = details.map(exercise => ({
+          sentence: exercise.sentence,
+          correctAnswer: exercise.correct_answer,
+          options: [
+            exercise.answer1,
+            exercise.answer2,
+            exercise.answer3,
+            exercise.correct_answer
+          ].sort(() => Math.random() - 0.5) // Xáo trộn các đáp án
+        }));
+    
+        console.log('Formatted Data:', formattedData);
+        setFillBlankData(formattedData); // Cập nhật state với dữ liệu đã xử lý
+        setFillBlankIndex(0); // Đặt câu hỏi đầu tiên
+        console.log('fillBlankData:', formattedData); // Log dữ liệu để kiểm tra
+      } catch (error) {
+        console.error('Lỗi khi lấy dữ liệu bài tập điền khuyết:', error);
+        if (error.response) {
+          const { status, data } = error.response;
+          if (status === 401) {
+            setError('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
+            localStorage.removeItem('token');
+            setTimeout(() => {
+              window.location.href = '/login';
+            }, 2000);
+          } else if (status === 404) {
+            setError('Không tìm thấy bài tập.');
+          } else {
+            setError(data.message || 'Không thể tải dữ liệu bài tập. Vui lòng thử lại sau.');
+          }
+        } else {
+          setError('Không thể kết nối đến server. Vui lòng thử lại sau.');
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    fetchFillBlankData();
+  }, [activeFeature, topic_Id]);
+
+  useEffect(() => {
+    if (activeFeature === 'fill-blank' && fillBlankData.length > 0) {
+      generateFillBlankOptions();
+    }
+  }, [activeFeature, fillBlankData]);
+
+  
+
+// Lấy topic_id từ localStorage khi component được mount
+useEffect(() => {
+  const storedTopic = localStorage.getItem('currentTopic');
+  if (storedTopic) {
+    const parsedTopic = JSON.parse(storedTopic);
+    setTopicId(parsedTopic.topic_id); // Lấy topic_id từ localStorage
+    setTopicName(parsedTopic.topic_name); // Lấy topic_name từ localStorage
+  } else {
+    console.error('No topic found in localStorage');
+  }
+}, []);
+
 
   // Gọi API khi component mount hoặc khi chọn tính năng flashcard
   useEffect(() => {
-    let isSubscribed = true;
-
-    const getFlashcards = async () => {
+    const fetchFlashcards = async () => {
       if (activeFeature !== 'flash-card') return;
 
       try {
@@ -114,73 +167,212 @@ const PracticePage = () => {
         const token = localStorage.getItem('token');
         if (!token) {
           setError('Vui lòng đăng nhập để xem flashcard');
+          setLoading(false); // Cập nhật trạng thái loading
           return;
         }
 
-        const response = await axiosInstance.get('/api/exercises/topic/1', {
+        // Gọi API để lấy dữ liệu flashcard
+        const response = await axiosInstance.get(`/api/exercises/topic/${topic_Id}/flashcard`, {
           headers: {
             'Authorization': `Bearer ${token}`
-          },
-          params: {
-            type: 'flashcard'
           }
         });
 
-        if (!isSubscribed) return;
-
-        console.log('API Response:', response.data);
-
-        if (response.data && response.data.success && Array.isArray(response.data.data)) {
-          // Tìm exercise có type là flashcard
-          const flashcardExercise = response.data.data.find(ex => ex.type === 'flashcard');
-          console.log('Found flashcard exercise:', flashcardExercise);
-
-          if (flashcardExercise && Array.isArray(flashcardExercise.details)) {
-            const formattedData = await Promise.all(flashcardExercise.details.map(async card => {
-              // Lấy ảnh từ Google cho mỗi từ
-              const imageUrl = await getGoogleImage(card.eng_word);
-              return {
-                word: card.eng_word || '',
-                meaning: card.vie_word || '',
-                image: imageUrl || card.image_url || '' // Sử dụng ảnh từ Google hoặc fallback về ảnh từ database
-              };
+        console.log('Response Data:', response.data);
+        
+        if (response.data && Array.isArray(response.data.data) && response.data.data.length > 0) {
+          const flashcardDetails = response.data.data[0]?.details; // Lấy mảng details từ response
+          if (Array.isArray(flashcardDetails) && flashcardDetails.length > 0) {
+            const formattedData = flashcardDetails.map(card => ({
+              word: card.eng_word || '',
+              meaning: card.vie_word || '',
+              image: card.image_url || ''
             }));
 
-            console.log('Formatted data:', formattedData);
+            console.log('Formatted FlashCards:', formattedData);
 
-            if (formattedData.length > 0) {
-              setFlashCards(formattedData);
-              setFlashCardIndex(0);
-            } else {
-              setError('Không có dữ liệu flashcard.');
-            }
+            setFlashCards(formattedData);
+            setFlashCardIndex(0);
           } else {
-            setError('Không tìm thấy bài tập flashcard.');
+            console.warn('Không có dữ liệu flashcard trong details.');
+            setError('Không có dữ liệu flashcard.');
           }
         } else {
-          setError('Không có dữ liệu từ API.');
+          console.warn('Không có dữ liệu flashcard trong response.');
+          setError('Không có dữ liệu flashcard.');
         }
       } catch (error) {
-        if (!isSubscribed) return;
         console.error('Lỗi khi lấy dữ liệu flashcard:', error);
-        if (error.response?.status === 401) {
-          setError('Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.');
+        if (error.response) {
+          const { status, data } = error.response;
+          if (status === 401) {
+            setError('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
+            localStorage.removeItem('token');
+            setTimeout(() => {
+              window.location.href = '/login';
+            }, 2000);
+          } else if (status === 404) {
+            setError('Không tìm thấy bài tập.');
+          } else {
+            setError(data.message || 'Không thể tải dữ liệu flashcard. Vui lòng thử lại sau.');
+          }
         } else {
-          setError('Không thể tải dữ liệu flashcard. Vui lòng thử lại sau.');
+          setError('Không thể kết nối đến server. Vui lòng thử lại sau.');
         }
       } finally {
-        if (isSubscribed) {
-          setLoading(false);
-        }
+        setLoading(false); // Đảm bảo trạng thái loading được cập nhật
       }
     };
 
-    getFlashcards();
+    fetchFlashcards();
+  }, [activeFeature, topicId]);
 
-    return () => {
-      isSubscribed = false;
+  useEffect(() => {
+    console.log('FlashCards State:', flashCards);
+  }, [flashCards]);
+
+  useEffect(() => {
+    if (flashCards.length > 0) {
+      console.log('FlashCards are being displayed:', flashCards[flashCardIndex]);
+    }
+  }, [flashCards, flashCardIndex]);
+
+  useEffect(() => {
+    const fetchListeningData = async () => {
+      if (activeFeature !== 'listen-speak') return;
+
+      try {
+        setLoading(true);
+        setError(null);
+
+        const token = localStorage.getItem('token');
+        if (!token) {
+          setError('Vui lòng đăng nhập để xem bài tập luyện nói');
+          setLoading(false);
+          return;
+        }
+
+        // Gọi API để lấy dữ liệu bài tập luyện nói
+        const response = await axiosInstance.get(`/api/exercises/topic/${topic_Id}/nghenoi`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        console.log('Response Data:', response.data);
+        setExerciseId(response.data.data[0]?.id); // Lưu exercise_Id từ response
+        if (response.data && Array.isArray(response.data.data) && response.data.data.length > 0) {
+          const details = response.data.data[0]?.details;
+          if (Array.isArray(details) && details.length > 0) {
+            const formattedData = details.map(item => ({
+              questionText: item.question_text
+            }));
+
+            setListeningData(formattedData); // Cập nhật state với dữ liệu đã xử lý
+            setListeningIndex(0); // Đặt câu hỏi đầu tiên
+          } else {
+            console.warn('Không có dữ liệu bài tập luyện nói.');
+            setError('Không có dữ liệu bài tập luyện nói.');
+          }
+        } else {
+          console.warn('Không có dữ liệu bài tập luyện nói.');
+          setError('Không có dữ liệu bài tập luyện nói.');
+        }
+      } catch (error) {
+        console.error('Lỗi khi lấy dữ liệu bài tập luyện nói:', error);
+        if (error.response) {
+          const { status, data } = error.response;
+          if (status === 401) {
+            setError('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
+            localStorage.removeItem('token');
+            setTimeout(() => {
+              window.location.href = '/login';
+            }, 2000);
+          } else if (status === 404) {
+            setError('Không tìm thấy bài tập.');
+          } else {
+            setError(data.message || 'Không thể tải dữ liệu bài tập. Vui lòng thử lại sau.');
+          }
+        } else {
+          setError('Không thể kết nối đến server. Vui lòng thử lại sau.');
+        }
+      } finally {
+        setLoading(false);
+      }
     };
-  }, [activeFeature]); // Chỉ chạy lại khi activeFeature thay đổi
+
+    fetchListeningData();
+  }, [activeFeature, topic_Id]);
+
+  useEffect(() => {
+    const fetchWritingData = async () => {
+      if (activeFeature !== 'writing') return;
+
+      try {
+        setLoading(true);
+        setError(null);
+
+        const token = localStorage.getItem('token');
+        if (!token) {
+          setError('Vui lòng đăng nhập để xem bài tập luyện viết');
+          setLoading(false);
+          return;
+        }
+
+        // Gọi API để lấy dữ liệu bài tập luyện viết
+        const response = await axiosInstance.get(`/api/exercises/topic/${topic_Id}/viet`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        console.log('Response Data:', response.data);
+        setExerciseId(response.data.data[0]?.id); // Lưu exercise_Id từ response
+        if (response.data && Array.isArray(response.data.data) && response.data.data.length > 0) {
+          const details = response.data.data[0]?.details;
+          if (Array.isArray(details) && details.length > 0) {
+            const formattedData = details.map(item => ({
+              vietnamese: item.vie_word,
+              english: item.eng_word
+            }));
+
+            setWritingData(formattedData); // Cập nhật state với dữ liệu đã xử lý
+            setWritingIndex(0); // Đặt câu hỏi đầu tiên
+          } else {
+            console.warn('Không có dữ liệu bài tập luyện viết.');
+            setError('Không có dữ liệu bài tập luyện viết.');
+          }
+          console.log('Response Data:', response.data);
+          console.log('Writing Data:', writingData);
+        } else {
+          console.warn('Không có dữ liệu bài tập luyện viết.');
+          setError('Không có dữ liệu bài tập luyện viết.');
+        }
+      } catch (error) {
+        console.error('Lỗi khi lấy dữ liệu bài tập luyện viết:', error);
+        if (error.response) {
+          const { status, data } = error.response;
+          if (status === 401) {
+            setError('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
+            localStorage.removeItem('token');
+            setTimeout(() => {
+              window.location.href = '/login';
+            }, 2000);
+          } else if (status === 404) {
+            setError('Không tìm thấy bài tập.');
+          } else {
+            setError(data.message || 'Không thể tải dữ liệu bài tập. Vui lòng thử lại sau.');
+          }
+        } else {
+          setError('Không thể kết nối đến server. Vui lòng thử lại sau.');
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchWritingData();
+  }, [activeFeature, topic_Id]);
 
   // Phát âm khi bấm vào câu luyện nghe
   const handleSpeech = (text) => {
@@ -199,7 +391,7 @@ const PracticePage = () => {
 
   // Thêm hàm kiểm tra kết quả nói
   const checkSpeakingResult = (userSpeech) => {
-    const correctAnswer = listeningData[listeningIndex].toLowerCase();
+    const correctAnswer = listeningData[listeningIndex].questionText.toLowerCase();
     const userAnswer = userSpeech.toLowerCase();
 
     // Tính điểm dựa trên độ chính xác
@@ -236,7 +428,7 @@ const PracticePage = () => {
 
     message += `\nĐộ chính xác: ${Math.round(accuracy)}%\n`;
     message += `Số từ đúng: ${score}/${words.length}\n`;
-    message += `Câu cần nói: ${listeningData[listeningIndex]}`;
+    message += `Câu cần nói: ${listeningData[listeningIndex].questionText}`;
 
     alert(message);
   };
@@ -314,7 +506,8 @@ const PracticePage = () => {
   // Kiểm tra bài tập điền khuyết
   const checkFillBlank = () => {
     if (!correctQuestions.fillBlank.has(fillBlankIndex)) {
-      const isCorrect = fillBlankAnswer === fillBlankData[fillBlankIndex].answer;
+      // Kiểm tra đáp án người dùng chọn với correctAnswer
+      const isCorrect = selectedOption === fillBlankData[fillBlankIndex].correctAnswer;
       if (isCorrect) {
         setCorrectQuestions(prev => ({
           ...prev,
@@ -334,22 +527,22 @@ const PracticePage = () => {
   const checkWriting = () => {
     const correctAnswer = writingData[writingIndex].english.toLowerCase();
     const userAnswer = userWriting.toLowerCase();
-
+  
     // Tính điểm dựa trên độ chính xác
     let score = 0;
     const words = correctAnswer.split(' ');
     const userWords = userAnswer.split(' ');
-
+  
     // Kiểm tra từng từ
     words.forEach(word => {
       if (userWords.includes(word)) {
         score += 1;
       }
     });
-
+  
     // Tính tỷ lệ đúng
     const accuracy = (score / words.length) * 100;
-
+  
     // Tạo thông báo chi tiết
     let message = '';
     if (accuracy >= 80) {
@@ -365,60 +558,199 @@ const PracticePage = () => {
     } else {
       message = '💪 Hãy thử lại! Bạn cần luyện tập thêm.\n';
     }
-
+  
     message += `\nĐộ chính xác: ${Math.round(accuracy)}%\n`;
     message += `Số từ đúng: ${score}/${words.length}\n`;
     message += `Câu đúng: ${writingData[writingIndex].english}`;
-
+  
     alert(message);
   };
+  
 
-  // Sinh bài tập ngẫu nhiên
   const generateFillBlankOptions = () => {
+    // Kiểm tra dữ liệu trước khi xử lý
+    if (!fillBlankData || fillBlankData.length === 0 || !fillBlankData[fillBlankIndex]) {
+      console.error('Dữ liệu fillBlankData không hợp lệ hoặc không tồn tại.');
+      return;
+    }
+  
     // Lấy từ đúng cho câu hiện tại
-    const correctWord = fillBlankData[fillBlankIndex].answer;
-
+    const correctWord = fillBlankData[fillBlankIndex].correctAnswer;
+  
     // Lọc ra các từ khác (không phải từ đúng)
-    const otherWords = flashCards
-      .filter(word => word.word !== correctWord)
+    const otherWords = fillBlankData
+      .filter((item, index) => index !== fillBlankIndex) // Loại bỏ câu hiện tại
+      .map(item => item.correctAnswer) // Lấy các đáp án đúng từ các câu khác
       .sort(() => Math.random() - 0.5) // Xáo trộn danh sách
       .slice(0, 3); // Chọn 3 từ ngẫu nhiên khác
-
+  
     // Kết hợp từ đúng với các từ ngẫu nhiên và xáo trộn lại
-    const allOptions = [...otherWords, { word: correctWord }]
-      .sort(() => Math.random() - 0.5);
-
+    const allOptions = [...otherWords, correctWord].sort(() => Math.random() - 0.5);
+  
     setOptions(allOptions);
+    console.log('fillBlankData:', fillBlankData);
+    console.log('fillBlankIndex:', fillBlankIndex);
   };
 
-  const nextQuestion = () => {
-    setIsFlipped(false);
+  const nextQuestion = async () => {
     if (activeFeature === 'flash-card') {
+      // Chuyển sang flashcard tiếp theo
       setFlashCardIndex((prev) => (prev + 1) % flashCards.length);
+      setIsFlipped(false); // Đặt lại trạng thái không lật flashcard
     } else if (activeFeature === 'fill-blank') {
-      setFillBlankIndex((prev) => (prev + 1) % fillBlankData.length);
-      setFillBlankAnswer('');
-      setSelectedOption(null);
-      generateFillBlankOptions();
       if (fillBlankIndex === fillBlankData.length - 1) {
-        alert(`Chúc mừng! Bạn đã hoàn thành bài tập với ${correctAnswers}/${fillBlankData.length} câu đúng!`);
+        // Người dùng đã hoàn thành bài tập điền khuyết
+        const totalQuestions = fillBlankData.length;
+  
+        // Gửi kết quả lên API
+        try {
+          const token = localStorage.getItem('token');
+          if (!token) {
+            alert('Vui lòng đăng nhập để lưu kết quả.');
+            return;
+          }
+  
+          const payload = {
+            exerciseId: exercise_Id, // ID của bài tập
+            correctAnswers: parseInt(correctAnswers, 10),
+            totalQuestions: parseInt(totalQuestions, 10),
+            type: 'dienkhuyet',
+            topicId:topic_Id,
+            topicName: topic_Name,
+          };
+  
+          console.log('Payload:', payload); // Log payload để kiểm tra
+  
+          const response = await axiosInstance.post('/api/history/result', payload, {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+          });
+  
+          if (response.data.success) {
+            alert('🎉 Kết quả đã được lưu vào lịch sử luyện tập!');
+          } else {
+            console.error('Lỗi khi lưu kết quả:', response.data.message);
+            alert('Không thể lưu kết quả. Vui lòng thử lại sau.');
+          }
+        } catch (error) {
+          console.error('Lỗi khi gửi kết quả:', error);
+          alert('Không thể kết nối đến server. Vui lòng thử lại sau.');
+        }
+  
+        // Đặt lại trạng thái bài tập
+        setFillBlankIndex(0);
         setCorrectAnswers(0);
         setCorrectQuestions(prev => ({ ...prev, fillBlank: new Set() }));
+      } else {
+        // Chuyển sang câu tiếp theo
+        setFillBlankIndex((prev) => (prev + 1) % fillBlankData.length);
+        setFillBlankAnswer('');
+        setSelectedOption(null);
+        generateFillBlankOptions();
       }
     } else if (activeFeature === 'listen-speak') {
-      setListeningIndex((prev) => (prev + 1) % listeningData.length);
-      setRecognizedSpeech('');
-      setInterimTranscript('');
       if (listeningIndex === listeningData.length - 1) {
-        alert(`🎉 Chúc mừng! Bạn đã hoàn thành bài tập nói với ${speakingScore}/${listeningData.length} câu đúng!`);
+        // Người dùng đã hoàn thành bài tập luyện nghe
+        const totalQuestions = listeningData.length;
+  
+        // Gửi kết quả lên API
+        try {
+          const token = localStorage.getItem('token');
+          if (!token) {
+            alert('Vui lòng đăng nhập để lưu kết quả.');
+            return;
+          }
+  
+          const payload = {
+            exerciseId: exercise_Id,// ID của bài tập
+            correctAnswers: parseInt(speakingScore, 10),
+            totalQuestions: parseInt(totalQuestions, 10),
+            type: 'nghenoi',
+            topicId: parseInt(topic_Id, 10),
+            topicName: topic_Name,
+          };
+  
+          console.log('Payload:', payload); // Log payload để kiểm tra
+  
+          const response = await axiosInstance.post('/api/history/result', payload, {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+          });
+  
+          if (response.data.success) {
+            alert(`🎉 Bạn đã hoàn thành bài tập nói với ${speakingScore}/${totalQuestions} câu đúng!`);
+          } else {
+            console.error('Lỗi khi lưu kết quả:', response.data.message);
+            alert('Không thể lưu kết quả. Vui lòng thử lại sau.');
+          }
+        } catch (error) {
+          console.error('Lỗi khi gửi kết quả:', error);
+          alert('Không thể kết nối đến server. Vui lòng thử lại sau.');
+        }
+  
+        // Đặt lại trạng thái bài tập
+        setListeningIndex(0);
         setSpeakingScore(0);
         setCorrectQuestions(prev => ({ ...prev, listenSpeak: new Set() }));
+      } else {
+        // Chuyển sang câu tiếp theo
+        setListeningIndex((prev) => (prev + 1) % listeningData.length);
+        setRecognizedSpeech('');
+        setInterimTranscript('');
       }
     } else if (activeFeature === 'writing') {
-      setWritingIndex((prev) => (prev + 1) % writingData.length);
-      setUserWriting('');
       if (writingIndex === writingData.length - 1) {
+        // Người dùng đã hoàn thành bài tập luyện viết
+        const totalQuestions = writingData.length;
+  
+        // Gửi kết quả lên API
+        try {
+          const token = localStorage.getItem('token');
+          if (!token) {
+            alert('Vui lòng đăng nhập để lưu kết quả.');
+            return;
+          }
+  
+          const payload = {
+            exerciseId: exercise_Id, // ID của bài tập
+            correctAnswers: parseInt(correctQuestions.writing.size, 10),
+            totalQuestions: parseInt(totalQuestions, 10),
+            type: 'viet',
+            topicId: topic_Id,
+            topicName: topic_Name,
+          };
+  
+          console.log('Payload:', payload); // Log payload để kiểm tra
+  
+          const response = await axiosInstance.post('/api/history/result', payload, {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+          });
+  
+          if (response.data.success) {
+            alert(`🎉 Bạn đã hoàn thành bài tập viết với ${correctQuestions.writing.size}/${totalQuestions} câu đúng!`);
+          } else {
+            console.error('Lỗi khi lưu kết quả:', response.data.message);
+            alert('Không thể lưu kết quả. Vui lòng thử lại sau.');
+          }
+        } catch (error) {
+          console.error('Lỗi khi gửi kết quả:', error);
+          alert('Không thể kết nối đến server. Vui lòng thử lại sau.');
+        }
+  
+        // Đặt lại trạng thái bài tập
+        setWritingIndex(0);
         setCorrectQuestions(prev => ({ ...prev, writing: new Set() }));
+      } else {
+        // Chuyển sang câu tiếp theo
+        setWritingIndex((prev) => (prev + 1) % writingData.length);
+        setUserWriting('');
       }
     }
   };
@@ -458,17 +790,43 @@ const PracticePage = () => {
               <h2 className="text-2xl font-bold text-white">{item.title}</h2>
             </div>
             <div className="p-6">
-              <button
-                onClick={() => {
-                  setActiveFeature(item.id);
-                  if (item.id === 'fill-blank') {
-                    generateFillBlankOptions(); // Sinh bài tập điền khuyết ngẫu nhiên khi bắt đầu
-                  }
-                }}
-                className={`px-4 py-2 ${item.color} text-white rounded-lg hover:opacity-80 transition duration-200`}
-              >
-                Bắt đầu
-              </button>
+              {item.id === 'flash-card' ? (
+                <button
+                  onClick={() => {
+                    setActiveFeature('flash-card');
+                  }}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:opacity-80 transition duration-200"
+                >
+                  Bắt đầu
+                </button>
+              ) : item.id === 'fill-blank' ? (
+                <button
+                  onClick={() => {
+                    setActiveFeature('fill-blank');
+                  }}
+                  className="px-4 py-2 bg-green-600 text-white rounded-lg hover:opacity-80 transition duration-200"
+                >
+                  Bắt đầu
+                </button>
+              ) : item.id === 'listen-speak' ? (
+                <button
+                  onClick={() => {
+                    setActiveFeature('listen-speak');
+                  }}
+                  className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:opacity-80 transition duration-200"
+                >
+                  Bắt đầu
+                </button>
+              ) : (
+                <button
+                  onClick={() => {
+                    setActiveFeature('writing');
+                  }}
+                  className="px-4 py-2 bg-amber-600 text-white rounded-lg hover:opacity-80 transition duration-200"
+                >
+                  Bắt đầu
+                </button>
+              )}
             </div>
           </div>
         ))}
@@ -488,17 +846,14 @@ const PracticePage = () => {
                   <div>
                     <p className="text-red-500 mb-2">{error}</p>
                     <button
-                      onClick={() => {
-                        setActiveFeature('flash-card');
-                        setFlashCardIndex(0);
-                      }}
+                      onClick={() => setActiveFeature('flash-card')}
                       className="bg-blue-500 text-white px-4 py-2 rounded-lg"
                     >
                       Thử lại
                     </button>
                   </div>
-                ) : flashCards.length > 0 ? (
-                  <>
+                ) : flashCards.length > 0 && flashCards[flashCardIndex] ? (
+                  <div>
                     <p className="text-gray-600 mb-4">Câu {flashCardIndex + 1}/{flashCards.length}</p>
                     <div
                       className="relative h-[400px] cursor-pointer"
@@ -532,22 +887,13 @@ const PracticePage = () => {
                             transform: 'rotateY(180deg)'
                           }}
                         >
-                          {flashCards[flashCardIndex].image && (
-                            <img
-                              src={flashCards[flashCardIndex].image}
-                              alt={flashCards[flashCardIndex].word}
-                              className="w-48 h-48 object-cover rounded-lg mb-4"
-                            />
-                          )}
                           <p className="text-2xl font-bold">{flashCards[flashCardIndex].meaning}</p>
                         </div>
                       </div>
                     </div>
-                  </>
-                ) : (
-                  <div className="text-center py-4">
-                    Không có flashcard nào
                   </div>
+                ) : (
+                  <div className="text-center py-4">Không có flashcard nào</div>
                 )}
               </div>
             )}
@@ -555,100 +901,127 @@ const PracticePage = () => {
             {activeFeature === 'fill-blank' && (
               <div>
                 <h2 className="text-xl font-bold mb-4">Điền Khuyết</h2>
-                <p className="text-gray-600 mb-4">Câu {fillBlankIndex + 1}/{fillBlankData.length}</p>
-                <p className="text-green-600 font-semibold mb-2">Số câu đúng: {correctAnswers}/{fillBlankData.length}</p>
-                <p className="mb-2">{fillBlankData[fillBlankIndex].sentence}</p>
+                {loading ? (
+                  <div className="text-center py-4">Đang tải...</div>
+                ) : error ? (
+                  <div className="text-red-500">{error}</div>
+                ) : fillBlankData.length > 0 ? (
+                  <div>
+                    <p className="text-gray-600 mb-4">Câu {fillBlankIndex + 1}/{fillBlankData.length}</p>
+                    <p className="mb-4">{fillBlankData[fillBlankIndex].sentence}</p>
 
-                <div className="grid grid-cols-2 gap-2 mb-4">
-                  {options.map((option, index) => (
-                    <button
-                      key={index}
-                      className={`p-2 rounded-lg hover:bg-gray-300 ${selectedOption && selectedOption.word === option.word ? 'bg-blue-300' : 'bg-gray-200'
-                        }`}
-                      onClick={() => handleOptionClick(option)}
-                    >
-                      {option.word}
-                    </button>
-                  ))}
-                </div>
+                    <div className="grid grid-cols-2 gap-2 mb-4">
+                      {fillBlankData[fillBlankIndex].options.map((option, index) => (
+                        <button
+                          key={index}
+                          className={`p-2 rounded-lg hover:bg-gray-300 ${selectedOption === option ? 'bg-blue-300' : 'bg-gray-200'}`}
+                          onClick={() => setSelectedOption(option)}
+                        >
+                          {option}
+                        </button>
+                      ))}
+                    </div>
 
-                <button onClick={checkFillBlank} className="bg-green-500 text-white px-4 py-2 rounded-lg ml-2">Kiểm tra</button>
+                    <button onClick={checkFillBlank} className="bg-green-500 text-white px-4 py-2 rounded-lg">Kiểm tra</button>
+                  </div>
+                ) : (
+                  <div className="text-center py-4">Không có bài tập nào</div>
+                )}
               </div>
             )}
 
             {activeFeature === 'listen-speak' && (
               <div>
                 <h2 className="text-xl font-bold mb-4">Luyện Nghe & Nói</h2>
-                <p className="text-gray-600 mb-4">Câu {listeningIndex + 1}/{listeningData.length}</p>
-                <p className="text-green-600 font-semibold mb-2">Số câu đúng: {speakingScore}/{listeningData.length}</p>
-                <p className="text-lg font-semibold mb-4">{listeningData[listeningIndex]}</p>
+                {loading ? (
+                  <div className="text-center py-4">Đang tải...</div>
+                ) : error ? (
+                  <div className="text-red-500">{error}</div>
+                ) : listeningData.length > 0 ? (
+                  <div>
+                    <p className="text-gray-600 mb-4">Câu {listeningIndex + 1}/{listeningData.length}</p>
+                    <p className="text-lg font-semibold mb-4">{listeningData[listeningIndex].questionText}</p>
 
-                <div className="flex justify-center gap-4 mb-4">
-                  <button
-                    className="bg-purple-500 text-white px-4 py-2 rounded-lg hover:opacity-80 transition duration-200"
-                    onClick={() => handleSpeech(listeningData[listeningIndex])}
-                  >
-                    Lặp lại
-                  </button>
+                    <div className="flex justify-center gap-4 mb-4">
+                      <button
+                        className="bg-purple-500 text-white px-4 py-2 rounded-lg hover:opacity-80 transition duration-200"
+                        onClick={() => handleSpeech(listeningData[listeningIndex].questionText)}
+                      >
+                        Lặp lại
+                      </button>
 
-                  {!isRecording ? (
-                    <button
-                      className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:opacity-80 transition duration-200"
-                      onClick={startSpeechRecognition}
-                    >
-                      Bắt đầu nói
-                    </button>
-                  ) : (
-                    <button
-                      className="bg-red-500 text-white px-4 py-2 rounded-lg hover:opacity-80 transition duration-200"
-                      onClick={stopRecording}
-                    >
-                      Dừng
-                    </button>
-                  )}
-                </div>
+                      {!isRecording ? (
+                        <button
+                          className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:opacity-80 transition duration-200"
+                          onClick={startSpeechRecognition}
+                        >
+                          Bắt đầu nói
+                        </button>
+                      ) : (
+                        <button
+                          className="bg-red-500 text-white px-4 py-2 rounded-lg hover:opacity-80 transition duration-200"
+                          onClick={stopRecording}
+                        >
+                          Dừng
+                        </button>
+                      )}
+                    </div>
 
-                {isRecording && (
-                  <div className="text-center mb-4">
-                    <p className="text-xl font-bold text-red-500">{formatTime(recordingTime)}</p>
-                  </div>
-                )}
-
-                {(interimTranscript || recognizedSpeech) && (
-                  <div className="mt-4 p-4 bg-gray-100 rounded-lg">
-                    <p className="text-gray-600 mb-2">Bạn nói:</p>
-                    {interimTranscript && (
-                      <p className="text-blue-500 italic">{interimTranscript}</p>
+                    {isRecording && (
+                      <div className="text-center mb-4">
+                        <p className="text-xl font-bold text-red-500">{formatTime(recordingTime)}</p>
+                      </div>
                     )}
-                    {recognizedSpeech && (
-                      <p className="text-green-600 font-medium">{recognizedSpeech}</p>
+
+                    {(interimTranscript || recognizedSpeech) && (
+                      <div className="mt-4 p-4 bg-gray-100 rounded-lg">
+                        <p className="text-gray-600 mb-2">Bạn nói:</p>
+                        {interimTranscript && (
+                          <p className="text-blue-500 italic">{interimTranscript}</p>
+                        )}
+                        {recognizedSpeech && (
+                          <p className="text-green-600 font-medium">{recognizedSpeech}</p>
+                        )}
+                      </div>
                     )}
                   </div>
+                ) : (
+                  <div className="text-center py-4">Không có bài tập nào</div>
                 )}
               </div>
             )}
 
             {activeFeature === 'writing' && (
-              <div>
-                <h2 className="text-xl font-bold mb-4">Luyện Viết</h2>
-                <p className="text-gray-600 mb-4">Câu {writingIndex + 1}/{writingData.length}</p>
-                <p className="text-lg font-semibold mb-2">Viết câu tiếng Anh tương ứng:</p>
-                <p className="text-blue-600 mb-4">{writingData[writingIndex].vietnamese}</p>
-                <textarea
-                  className="border p-2 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  rows="3"
-                  value={userWriting}
-                  onChange={(e) => setUserWriting(e.target.value)}
-                  placeholder="Nhập câu tiếng Anh của bạn..."
-                ></textarea>
-                <button
-                  onClick={checkWriting}
-                  className="bg-amber-500 text-white px-4 py-2 rounded-lg mt-2 hover:opacity-80 transition duration-200"
-                >
-                  Kiểm tra
-                </button>
-              </div>
-            )}
+  <div>
+    <h2 className="text-xl font-bold mb-4">Luyện Viết</h2>
+    {loading ? (
+      <div className="text-center py-4">Đang tải...</div>
+    ) : error ? (
+      <div className="text-red-500">{error}</div>
+    ) : writingData.length > 0 && writingData[writingIndex] ? (
+      <div>
+        <p className="text-gray-600 mb-4">Câu {writingIndex + 1}/{writingData.length}</p>
+        <p className="text-lg font-semibold mb-2">Viết câu tiếng Anh tương ứng:</p>
+        <p className="text-blue-600 mb-4">{writingData[writingIndex].vietnamese}</p>
+        <textarea
+          className="border p-2 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          rows="3"
+          value={userWriting}
+          onChange={(e) => setUserWriting(e.target.value)}
+          placeholder="Nhập câu tiếng Anh của bạn..."
+        ></textarea>
+        <button
+          onClick={checkWriting}
+          className="bg-amber-500 text-white px-4 py-2 rounded-lg mt-2 hover:opacity-80 transition duration-200"
+        >
+          Kiểm tra
+        </button>
+      </div>
+    ) : (
+      <div className="text-center py-4">Không có bài tập nào</div>
+    )}
+  </div>
+)}
 
             <div className="flex justify-between mt-4">
               <button className="bg-gray-400 text-white px-4 py-2 rounded-lg" onClick={previousQuestion}>Quay lại</button>

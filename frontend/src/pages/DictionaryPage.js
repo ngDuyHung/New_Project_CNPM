@@ -19,11 +19,7 @@ const DictionaryPage = () => {
       setLoading(true);
       setError(null);
       const response = await axiosInstance.get('/api/vocabulary/GetAll');
-      console.log('API Response:', response.data);
-
-      const processedData = Array.isArray(response.data[0]) ? response.data[0] : [];
-      console.log('Processed data:', processedData);
-
+      const processedData = Array.isArray(response.data) ? response.data : [];
       setWords(processedData);
     } catch (error) {
       console.error('Lỗi khi lấy dữ liệu từ vựng:', error);
@@ -54,7 +50,7 @@ const DictionaryPage = () => {
       console.error('Lỗi phát âm thanh');
       setIsPlaying(false);
     };
-    window.speechSynthesis.cancel(); // Dừng âm thanh đang phát (nếu có)
+    window.speechSynthesis.cancel();
     window.speechSynthesis.speak(utterance);
   };
 
@@ -66,13 +62,8 @@ const DictionaryPage = () => {
     if (!item || !item.word) return false;
     return item.word.toLowerCase().includes(search.toLowerCase());
   }).sort((a, b) => {
-    // Sắp xếp theo thứ tự ABCD
     return a.word.toLowerCase().localeCompare(b.word.toLowerCase());
   });
-
-  // Debug log
-  console.log('Current words state:', words);
-  console.log('Filtered words:', filteredWords);
 
   if (loading) {
     return (
@@ -122,44 +113,9 @@ const DictionaryPage = () => {
                 className="p-4 border rounded-md bg-gray-100 cursor-pointer hover:bg-gray-200 transition-colors"
                 onClick={() => handleWordClick(item)}
               >
-                <div className="flex items-center justify-between">
-                  <h3 className="font-semibold flex items-center gap-2">
-                    <span>{item.word}</span>
-                    <span className="text-gray-500">{item.pronunciation || ''} :</span>
-                    <span className="text-gray-700">{item.meaning}</span>
-                  </h3>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      playGoogleTTS(item.word);
-                    }}
-                    className="p-2 rounded-full hover:bg-gray-300 transition-colors"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-5 w-5 text-gray-600"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      {isPlaying ? (
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z M10 15l6-3-6-3v6z"
-                        />
-                      ) : (
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M15.536 8.464a5 5 0 010 7.072M17.95 6.05a8 8 0 010 11.9M4.5 12h4m6 0h4M8 10v4l4-2-4-2z"
-                        />
-                      )}
-                    </svg>
-                  </button>
-                </div>
+                <h3 className="font-semibold">{item.word}</h3>
+                <p className="text-gray-500">{item.pronunciation || ''}</p>
+                <p className="text-gray-700">{item.meaning}</p>
               </div>
             ))
           )}
@@ -169,48 +125,77 @@ const DictionaryPage = () => {
       {selectedWord && (
         <div className="mt-4 p-4 border rounded-md bg-white shadow-md">
           <div className="flex items-center gap-4">
-            <h2 className="text-xl font-bold">{selectedWord.word}</h2>
+            <img
+              src={selectedWord.image_path}
+              alt={selectedWord.word}
+              className="w-24 h-24 object-cover rounded-md"
+            />
+            <div>
+              <h2 className="text-xl font-bold">{selectedWord.word}</h2>
+              <p className="text-gray-500 mt-2">{selectedWord.pronunciation || ''}</p>
+              <p className="text-gray-700 mt-1">{selectedWord.meaning}</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-4 mt-4">
             <button
               onClick={handlePlaySound}
-              className="p-2 rounded-full bg-blue-500 hover:bg-blue-600 text-white transition-colors"
+              className={`flex items-center gap-2 px-4 py-2 rounded-md transition-colors ${
+                isPlaying ? 'bg-gray-400 text-white cursor-not-allowed' : 'bg-blue-500 text-white hover:bg-blue-600'
+              }`}
+              disabled={isPlaying}
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                {isPlaying ? (
+              {isPlaying ? (
+                <svg
+                  className="animate-spin h-5 w-5 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
                   <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z M10 15l6-3-6-3v6z"
-                  />
-                ) : (
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M15.536 8.464a5 5 0 010 7.072M17.95 6.05a8 8 0 010 11.9M4.5 12h4m6 0h4M8 10v4l4-2-4-2z"
-                  />
-                )}
-              </svg>
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                  ></path>
+                </svg>
+              ) : (
+                <>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M15.536 8.464a5 5 0 010 7.072M17.95 6.05a8 8 0 010 11.9M4.5 12h4m6 0h4M8 10v4l4-2-4-2z"
+                    />
+                  </svg>
+                  <span>Phát âm</span>
+                </>
+              )}
+            </button>
+            <button
+              className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors"
+              onClick={() => setSelectedWord(null)}
+            >
+              Đóng
             </button>
           </div>
-          <p className="text-gray-500 mt-2">{selectedWord.pronunciation || ''}</p>
-          <p className="text-gray-700 mt-1">{selectedWord.meaning}</p>
-          <button
-            className="mt-4 px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
-            onClick={() => setSelectedWord(null)}
-          >
-            Đóng
-          </button>
         </div>
       )}
     </div>
   );
 };
 
-export default DictionaryPage; 
+export default DictionaryPage;

@@ -31,6 +31,18 @@ const topicController = {
     getTopicById: async (req, res) => {
         try {
             const topic = await Topic.getById(req.params.id);
+            if (!topic) {
+                return res.status(404).send();
+            }
+            res.status(200).send(topic);
+        } catch (error) {
+            res.status(500).send(error);
+        }
+    },
+     //[GET] Get a single topic by name
+     getTopicByName: async (req, res) => {
+        try {
+            const topic = await Topic.getByName(req.params.name);
             console.log(topic);
             if (!topic) {
                 return res.status(404).send();
@@ -40,7 +52,7 @@ const topicController = {
             res.status(500).send(error);
         }
     },
-
+    
     // [PUT]Update a topic by ID
     updateTopic: async (req, res) => {
         try {
@@ -76,7 +88,7 @@ const topicController = {
     // Get all topics by user ID
     getAllTopicsByUserId: async (req, res) => {
         try {
-            const userId = req.body.user_id; // Lấy user_id từ body
+            const userId = req.query.user_id; // Lấy user_id từ body
             console.log(userId); // Kiểm tra user_id
             const topics = await Topic.getAllByUserId(userId); // Gọi model để lấy danh sách topic theo user_id
             res.status(200).send(topics);
