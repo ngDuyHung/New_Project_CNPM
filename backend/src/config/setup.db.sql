@@ -33,7 +33,7 @@ BEGIN
     -- Kiểm tra xem topic_name đã tồn tại chưa
     SELECT COUNT(*) INTO topic_count
     FROM topics
-    WHERE topic_name = NEW.topic_name;
+    WHERE topic_name = NEW.topic_name AND user_id = NEW.user_id;
 
     -- Nếu tồn tại (topic_count > 0) thì báo lỗi
     IF topic_count > 0 THEN
@@ -98,8 +98,8 @@ CREATE TABLE IF NOT EXISTS nghenoi (
 CREATE TABLE IF NOT EXISTS viet (
     id INT AUTO_INCREMENT PRIMARY KEY,
     exercise_id INT,
-    eng_word TEXT NOT NULL,
-    vie_word TEXT NOT NULL,
+    eng_word VARCHAR(255) NOT NULL,
+    vie_word VARCHAR(255) NOT NULL,
     FOREIGN KEY (exercise_id) REFERENCES exercises(id) ON DELETE CASCADE
 );
 

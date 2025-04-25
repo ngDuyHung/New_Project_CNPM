@@ -105,6 +105,10 @@ class ConversationalAI {
       
       const text = result.text; // Truy cập phản hồi từ API
       console.log('Raw response from Gemini API:', text);
+      if (!text) {
+        console.warn('No text content in the response from Gemini.');
+        return [];
+      }
       if (text) {
         try {
           // Loại bỏ các ký tự không mong muốn
@@ -185,6 +189,45 @@ class ConversationalAI {
     }
   }
 
+  static async generateVocabularyWithGemi(topic, count) {
+    try {
+      const sanitizedTopic = topic.trim().replace(/[^a-zA-Z0-9\s]/g, '');
+      const prompt = `Generate a JSON array containing ${count} English vocabulary words specifically related to the topic ${sanitizedTopic}. Only include the words themselves, no explanations or additional information.`;
+  
+      const result = await genAI.models.generateContent({
+        model: 'gemini-2.0-flash',
+        contents: prompt,
+      });
+  
+      const text = result.text; // Truy cập phản hồi từ API
+      console.log('Raw response from Gemini API:', text);
+  
+      if (text) {
+        try {
+          const cleanedText = text.replace(/```json|```/g, '').trim();
+          const data = JSON.parse(cleanedText);
+  
+          // Validate the response format
+          if (Array.isArray(data) && data.every(word => typeof word === 'string')) {
+            return data; // Trả về danh sách từ vựng
+          } else {
+            console.error('Invalid response format from Gemini API:', data);
+            return null;
+          }
+        } catch (error) {
+          console.error('Error parsing JSON response from Gemini:', error, text);
+          return null;
+        }
+      } else {
+        console.warn('No text content in the response from Gemini.');
+        return null;
+      }
+    } catch (error) {
+      console.error('Error generating vocabulary with Gemini:', error);
+      return null;
+    }
+  }
+  
 }
 
 

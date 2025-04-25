@@ -9,4 +9,6 @@ router.post('/conversational-ai/chat', auth, conversationalAIController.chatWith
 // Route for generating fill-in-the-blank exercises
 router.post('/conversational-ai/generate-fill-in-the-blank', auth, conversationalAIController.generateFillInTheBlank);
 
+//// Route for generating vocabulary exercises
+router.post('/conversational-ai/generate-vocabulary', auth, conversationalAIController.generateVocabulary);
 module.exports = router; 
