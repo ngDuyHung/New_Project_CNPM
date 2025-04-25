@@ -227,9 +227,6 @@ const CreateTopic = ({
 
         if (response.status === 200) {
           onSaveEdit(response.data);
-            // Notify the user upon successful topic creation
-      toast.success("Topic created successfully!");
-
         } else {
           alert("Failed to update topic.");
         }
