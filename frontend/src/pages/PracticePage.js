@@ -5,21 +5,6 @@ import Swal from 'sweetalert2';
 
 
 
-// Dữ liệu bài tập luyện nghe
-const listeningData = [
-  'Hello, how are you?',
-  'Nice to meet you!',
-  'What is your favorite color?'
-];
-
-// Dữ liệu bài tập luyện viết
-const writingData = [
-  { vietnamese: 'Con cáo nhanh nhẹn màu nâu nhảy qua con chó lười biếng.', english: 'The quick brown fox jumps over the lazy dog.' },
-  { vietnamese: 'Cô ấy bán vỏ sò biển ở bờ biển.', english: 'She sells seashells by the seashore.' },
-  { vietnamese: 'Tôi thích ăn táo và chuối.', english: 'I like eating apples and bananas.' },
-  { vietnamese: 'Mặt trời chiếu sáng trên bầu trời xanh.', english: 'The sun shines in the blue sky.' }
-];
-
 const PracticePage = () => {
   const [topic_Id, setTopicId] = useState(null); // State để lưu topic_id
   const [activeFeature, setActiveFeature] = useState(null);
@@ -563,9 +548,19 @@ useEffect(() => {
     const accuracy = (score / words.length) * 100;
   
     // Tạo thông báo chi tiết
-    let message = '';
     if (accuracy >= 80) {
-      message = '🎉 Chúc mừng! Bạn đã viết rất tốt!\n';
+      Swal.fire({
+        icon: 'success',
+        title: '🎉 Chúc mừng!',
+        html: `
+          <p>Bạn đã viết rất tốt!</p>
+          <p><strong>Độ chính xác:</strong> ${Math.round(accuracy)}%</p>
+          <p><strong>Số từ đúng:</strong> ${score}/${words.length}</p>
+          <p><strong>Câu đúng:</strong> ${writingData[writingIndex].english}</p>
+        `,
+        confirmButtonText: 'Tiếp tục'
+      });
+    
       if (!correctQuestions.writing.has(writingIndex)) {
         setCorrectQuestions(prev => ({
           ...prev,
@@ -573,16 +568,30 @@ useEffect(() => {
         }));
       }
     } else if (accuracy >= 60) {
-      message = '👍 Khá tốt! Bạn đã viết đúng một số từ.\n';
+      Swal.fire({
+        icon: 'info',
+        title: '👍 Khá tốt!',
+        html: `
+          <p>Bạn đã viết đúng một số từ.</p>
+          <p><strong>Độ chính xác:</strong> ${Math.round(accuracy)}%</p>
+          <p><strong>Số từ đúng:</strong> ${score}/${words.length}</p>
+          <p><strong>Câu đúng:</strong> ${writingData[writingIndex].english}</p>
+        `,
+        confirmButtonText: 'Thử lại'
+      });
     } else {
-      message = '💪 Hãy thử lại! Bạn cần luyện tập thêm.\n';
+      Swal.fire({
+        icon: 'error',
+        title: '💪 Hãy thử lại!',
+        html: `
+          <p>Bạn cần luyện tập thêm.</p>
+          <p><strong>Độ chính xác:</strong> ${Math.round(accuracy)}%</p>
+          <p><strong>Số từ đúng:</strong> ${score}/${words.length}</p>
+          <p><strong>Câu đúng:</strong> ${writingData[writingIndex].english}</p>
+        `,
+        confirmButtonText: 'Thử lại'
+      });
     }
-  
-    message += `\nĐộ chính xác: ${Math.round(accuracy)}%\n`;
-    message += `Số từ đúng: ${score}/${words.length}\n`;
-    message += `Câu đúng: ${writingData[writingIndex].english}`;
-  
-    alert(message);
   };
   
 
@@ -625,7 +634,12 @@ useEffect(() => {
         try {
           const token = localStorage.getItem('token');
           if (!token) {
-            alert('Vui lòng đăng nhập để lưu kết quả.');
+            Swal.fire({
+              icon: 'warning',
+              title: 'Vui lòng đăng nhập',
+              text: 'Bạn cần đăng nhập để lưu kết quả.',
+              confirmButtonText: 'Đăng nhập'
+            });
             return;
           }
   
@@ -634,7 +648,7 @@ useEffect(() => {
             correctAnswers: parseInt(correctAnswers, 10),
             totalQuestions: parseInt(totalQuestions, 10),
             type: 'dienkhuyet',
-            topicId:topic_Id,
+            topicId: topic_Id,
             topicName: topic_Name,
           };
   
@@ -648,14 +662,29 @@ useEffect(() => {
           });
   
           if (response.data.success) {
-            alert('🎉 Kết quả đã được lưu vào lịch sử luyện tập!');
+            Swal.fire({
+              icon: 'success',
+              title: 'Hoàn thành!',
+              html: `🎉 Bạn đã hoàn thành bài tập điền khuyết với <b>${correctAnswers}/${totalQuestions}</b> câu đúng!`,
+              confirmButtonText: 'Xem kết quả'
+            });
           } else {
             console.error('Lỗi khi lưu kết quả:', response.data.message);
-            alert('Không thể lưu kết quả. Vui lòng thử lại sau.');
+            Swal.fire({
+              icon: 'error',
+              title: 'Lỗi',
+              text: 'Không thể lưu kết quả. Vui lòng thử lại sau.',
+              confirmButtonText: 'OK'
+            });
           }
         } catch (error) {
           console.error('Lỗi khi gửi kết quả:', error);
-          alert('Không thể kết nối đến server. Vui lòng thử lại sau.');
+          Swal.fire({
+            icon: 'error',
+            title: 'Lỗi kết nối',
+            text: 'Không thể kết nối đến server. Vui lòng thử lại sau.',
+            confirmButtonText: 'OK'
+          });
         }
   
         // Đặt lại trạng thái bài tập
@@ -678,12 +707,17 @@ useEffect(() => {
         try {
           const token = localStorage.getItem('token');
           if (!token) {
-            alert('Vui lòng đăng nhập để lưu kết quả.');
+            Swal.fire({
+              icon: 'warning',
+              title: 'Vui lòng đăng nhập',
+              text: 'Bạn cần đăng nhập để lưu kết quả.',
+              confirmButtonText: 'Đăng nhập'
+            });
             return;
           }
   
           const payload = {
-            exerciseId: exercise_Id,// ID của bài tập
+            exerciseId: exercise_Id, // ID của bài tập
             correctAnswers: parseInt(speakingScore, 10),
             totalQuestions: parseInt(totalQuestions, 10),
             type: 'nghenoi',
@@ -704,15 +738,26 @@ useEffect(() => {
             Swal.fire({
               icon: 'success',
               title: 'Hoàn thành!',
-              html: `🎉 Bạn đã hoàn thành bài tập viết với <b>${correctQuestions.writing.size}/${totalQuestions}</b> câu đúng!`,
+              html: `🎉 Bạn đã hoàn thành bài tập luyện nghe với <b>${speakingScore}/${totalQuestions}</b> câu đúng!`,
               confirmButtonText: 'Xem kết quả'
-            }); } else {
+            });
+          } else {
             console.error('Lỗi khi lưu kết quả:', response.data.message);
-            alert('Không thể lưu kết quả. Vui lòng thử lại sau.');
+            Swal.fire({
+              icon: 'error',
+              title: 'Lỗi',
+              text: 'Không thể lưu kết quả. Vui lòng thử lại sau.',
+              confirmButtonText: 'OK'
+            });
           }
         } catch (error) {
           console.error('Lỗi khi gửi kết quả:', error);
-          alert('Không thể kết nối đến server. Vui lòng thử lại sau.');
+          Swal.fire({
+            icon: 'error',
+            title: 'Lỗi kết nối',
+            text: 'Không thể kết nối đến server. Vui lòng thử lại sau.',
+            confirmButtonText: 'OK'
+          });
         }
   
         // Đặt lại trạng thái bài tập
@@ -734,7 +779,12 @@ useEffect(() => {
         try {
           const token = localStorage.getItem('token');
           if (!token) {
-            alert('Vui lòng đăng nhập để lưu kết quả.');
+            Swal.fire({
+              icon: 'warning',
+              title: 'Vui lòng đăng nhập',
+              text: 'Bạn cần đăng nhập để lưu kết quả.',
+              confirmButtonText: 'Đăng nhập'
+            });
             return;
           }
   
@@ -757,10 +807,20 @@ useEffect(() => {
           });
   
           if (response.data.success) {
-            alert(`🎉 Bạn đã hoàn thành bài tập viết với ${correctQuestions.writing.size}/${totalQuestions} câu đúng!`);
+            Swal.fire({
+              icon: 'success',
+              title: 'Hoàn thành!',
+              html: `🎉 Bạn đã hoàn thành bài tập viết với <b>${correctQuestions.writing.size}/${totalQuestions}</b> câu đúng!`,
+              confirmButtonText: 'Xem kết quả'
+            });
           } else {
             console.error('Lỗi khi lưu kết quả:', response.data.message);
-            alert('Không thể lưu kết quả. Vui lòng thử lại sau.');
+            Swal.fire({
+              icon: 'error',
+              title: 'Lỗi',
+              text: 'Không thể lưu kết quả. Vui lòng thử lại sau.',
+              confirmButtonText: 'OK'
+            });
           }
         } catch (error) {
           console.error('Lỗi khi gửi kết quả:', error);
@@ -769,7 +829,8 @@ useEffect(() => {
             title: 'Lỗi kết nối',
             text: 'Không thể kết nối đến server. Vui lòng thử lại sau.',
             confirmButtonText: 'OK'
-          }); }
+          });
+        }
   
         // Đặt lại trạng thái bài tập
         setWritingIndex(0);

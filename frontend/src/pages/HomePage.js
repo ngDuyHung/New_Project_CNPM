@@ -5,7 +5,7 @@ import { debounce } from "lodash";
 
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
+import Swal from 'sweetalert2';
 
 const translateWord = async (word) => {
   try {
@@ -193,7 +193,18 @@ const CreateTopic = ({
     }
   };
 
-  const addWord = () => setWords([...words, ""]);
+  const addWord = () => {
+    if (words.length >= 20) {
+       Swal.fire({
+                icon: 'error',
+                title: 'ADD ÍT THÔI MÀI ĐỊNH PHÁ WEB À !!',
+                text: 'You can only add up to 20 words.',
+                confirmButtonText: 'Thử lại'
+              });
+      return;
+    }
+    setWords([...words, ""]);
+  };
   const removeWord = (index) => setWords(words.filter((_, i) => i !== index));
 
   const handleSave = async () => {
