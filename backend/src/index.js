@@ -27,7 +27,7 @@ const limiter = rateLimit({
   max: 10000 // limit each IP to 100 requests per windowMs
 });
 app.use(limiter);
-app.use(cors(corsOptions));
+
 // CORS configuration
 const corsOptions = {
    origin: process.env.NODE_ENV === 'production' 
