@@ -24,10 +24,10 @@ app.use(compression());
 // Rate limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100 // limit each IP to 100 requests per windowMs
+  max: 10000 // limit each IP to 100 requests per windowMs
 });
 app.use(limiter);
-
+app.use(cors());
 // CORS configuration
 const corsOptions = {
    origin: process.env.NODE_ENV === 'production' 
@@ -40,6 +40,12 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
+
+app.use((req, res, next) => {
+  console.log('CORS middleware applied for:', req.method, req.path);
+  next();
+});
+
 app.use(express.json());
 
 // Health check và thông tin hệ thống
@@ -132,7 +138,10 @@ app.get('/ip', (req, res) => {
   res.send(ip);
 });
 // Routes
-app.use('/api/vocabulary', vocabRoutes);
+app.use('/api/vocabulary', (req, res, next) => {
+  console.log('CORS applied for /api/vocabulary');
+  next();
+}, vocabRoutes);
 app.use('/api/topics', topicRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/auth', authRoutes);

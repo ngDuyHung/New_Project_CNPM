@@ -3,6 +3,10 @@ import { useNavigate } from "react-router-dom";
 import axiosInstance from "../api/axios";
 import { debounce } from "lodash";
 
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+
 const translateWord = async (word) => {
   try {
     console.log(`Translating word: ${word}`); // Log từ cần dịch
@@ -133,36 +137,38 @@ const CreateTopic = ({
 
   const handleGenerateAI = async () => {
     if (!topicName.trim()) {
-      alert("Please enter topic name first!");
+      toast.error("Please enter topic name first!");
       return;
     }
-
+  
     setIsGenerating(true);
     try {
-      const requiredCount = words.length; // Lấy số lượng ô hiện tại
-      const response = await fetch(
-        `https://api.datamuse.com/words?ml=${encodeURIComponent(
-          topicName
-        )}&max=${requiredCount}`
+      const requiredCount = words.length; // Số lượng từ cần tạo
+      const response = await axiosInstance.post(
+        '/api/conversational-ai/generate-vocabulary',
+        {
+          topic: topicName,
+          count: requiredCount,
+        }
       );
-      const data = await response.json();
-
-      // Tạo mảng từ với số lượng bằng số ô hiện có
-      const generatedWords = data
-        .slice(0, requiredCount) // Chỉ lấy số từ bằng số ô
-        .map((item) => item.word)
-        .filter((word) => word);
-
-      // Điền đủ số lượng ô, nếu không đủ thì để trống
-      const paddedWords = [
-        ...generatedWords,
-        ...Array(requiredCount - generatedWords.length).fill(""),
-      ];
-
-      setWords(paddedWords);
+  
+      if (response.status === 200 && Array.isArray(response.data.data)) {
+        const generatedWords = response.data.data;
+  
+        // Điền đủ số lượng ô, nếu không đủ thì để trống
+        const paddedWords = [
+          ...generatedWords,
+          ...Array(requiredCount - generatedWords.length).fill(""),
+        ];
+  
+        setWords(paddedWords);
+      } else {
+        console.error("Failed to generate words:", response.data);
+        alert("Failed to generate words. Please try again!");
+      }
     } catch (error) {
-      console.error("Generation error:", error);
-      alert("Failed to generate words. Please try again!");
+      console.error("Error generating words with Gemi:", error);
+      alert("An error occurred while generating words. Please try again!");
     } finally {
       setIsGenerating(false);
     }
@@ -376,11 +382,16 @@ const CreateTopic = ({
       const newTopic = {
         topic_id: getTopicId,
         topic_name: topicName,
-        words,};
+        words,
+      };
       onCreate(newTopic);
     } catch (error) {
       console.error("API error:", error);
-      alert("An error occurred. Please try again.");
+      if (error.response && error.response.data.message === "Topic name already exists!") {
+        toast.error("Topic name already exists! Please choose a different name.");
+      } else {
+        toast.error("An error occurred. Please try again.");
+      }
     } finally {
       setIsSaving(false);
     }
@@ -461,14 +472,14 @@ const CreateTopic = ({
           ))}
         </div>
         <button
-          className="bg-green-500 text-white px-6 py-2 mt-4 rounded-md w-full"
+          className="bg-yellow-400 text-white px-6 py-2 mt-4 rounded-md w-full"
           onClick={addWord}
         >
           + Add Word
         </button>
         <div className="flex justify-between gap-4 mt-4">
           <button
-            className={`bg-yellow-400 px-4 py-2 rounded-md w-1/2 ${
+            className={`bg-green-500 px-4 py-2 rounded-md w-1/2 ${
               isSaving ? "opacity-50 cursor-not-allowed" : ""
             }`}
             onClick={handleSave}
@@ -589,7 +600,7 @@ const App = () => {
         }
       } catch (error) {
         if (error.response && error.response.status === 401) {
-          alert("Session expired. Please log in again.");
+          toast.error("Session expired. Please log in again.");
           window.location.href = "/login";
         } else {
           console.error("API error:", error);
@@ -740,6 +751,7 @@ const App = () => {
           setEditingTopic={setEditingTopic}
         />
       </div>
+      <ToastContainer />
     </div>
   );
 };

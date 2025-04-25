@@ -58,6 +58,44 @@ const conversationalAIController = {
       });
     }
   },
+
+  async generateVocabulary(req, res) {
+    try {
+      const { topic, count } = req.body;
+  
+      // Kiểm tra dữ liệu đầu vào
+      if (!topic || !count) {
+        return res.status(400).json({
+          success: false,
+          message: 'Topic and count are required',
+        });
+      }
+  
+      // Gọi API Gemi để tạo từ vựng
+      const result = await ConversationalAI.generateVocabularyWithGemi(topic, count);
+  
+      // Kiểm tra kết quả trả về từ API Gemi
+      if (result && Array.isArray(result)) {
+        res.status(200).json({
+          success: true,
+          data: result, // Trả về danh sách từ vựng
+        });
+      } else {
+        res.status(500).json({
+          success: false,
+          message: 'Failed to generate vocabulary',
+        });
+      }
+    } catch (error) {
+      console.error('Error in generateVocabulary controller:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Internal server error',
+        error: error.message,
+      });
+    }
+  }
+
 };
 
 module.exports = conversationalAIController;
