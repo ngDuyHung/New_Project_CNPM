@@ -209,7 +209,7 @@ const CreateTopic = ({
 
   const handleSave = async () => {
     if (!topicName.trim() || words.some((word) => !word.trim())) {
-      window.alert(
+       toast.error(
         "Error: Topic name and all vocabulary fields must be filled."
       );
       return;
@@ -227,6 +227,9 @@ const CreateTopic = ({
 
         if (response.status === 200) {
           onSaveEdit(response.data);
+            // Notify the user upon successful topic creation
+      toast.success("Topic created successfully!");
+
         } else {
           alert("Failed to update topic.");
         }
