@@ -1,9 +1,9 @@
 <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; border: 1px solid #e1e4e8; border-radius: 10px; padding: 25px; background-color: #f6f8fa;">
 
 <div align="center">
-  <h1 style="color: #0366d6; border-bottom: 2px solid #0366d6; padding-bottom: 10px;">
+  <h2 style="color: #0366d6; border-bottom: 2px solid #0366d6; padding-bottom: 10px;">
     🚀 VocabMaster - Ứng dụng Học Tiếng Anh Thông Minh 🚀
-  </h1>
+  </h2>
   <p style="font-size: 1.2em; color: #586069;">
     Một nền tảng học tiếng Anh trực tuyến hiện đại, tích hợp Trí tuệ nhân tạo (AI) để cá nhân hóa lộ trình học tập và nâng cao động lực cho người học.
   </p>
@@ -157,8 +157,8 @@
 
 2.  **💾 Cài đặt Database:**
     * Tạo một database trong MySQL với tên `categories_db`.
-    * Chạy câu lệnh SQL sau để tạo bảng và dữ liệu mẫu:
-        ```sql
+    * Chạy câu lệnh SQL trong file db để tạo bảng và dữ liệu:
+        ```sql -- ví dụ mẫu
         CREATE TABLE categories (
             id INT AUTO_INCREMENT PRIMARY KEY,
             name VARCHAR(255) NOT NULL
