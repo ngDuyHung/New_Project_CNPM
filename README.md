@@ -65,7 +65,7 @@
     </thead>
     <tbody>
       <tr style="border-bottom: 1px solid #e1e4e8;">
-        <td style="padding: 10px;"><strong>Nguyễn Duy Hùng</strong></td>
+        <td style="padding: 10px; color: red;"><strong>Nguyễn Duy Hùng</strong></td>
         <td style="padding: 10px;"><strong>DH52200731</strong></td>
         <td style="padding: 10px;"><strong>Team Leader / Backend</strong></td>
       </tr>
@@ -161,10 +161,10 @@
     ```
 
 2.  **💾 Database Setup:**
-    * Create a MySQL database named `categories_db`.
+    * Create a MySQL database "The database file is included in the source code.".
     * Run the following SQL query to create the table and insert sample data:
-        ```sql
-        CREATE TABLE categories (
+        ```sql - demo
+        CREATE TABLE demotable (
             id INT AUTO_INCREMENT PRIMARY KEY,
             name VARCHAR(255) NOT NULL
         );
@@ -221,10 +221,10 @@
     ```
 
 2.  **💾 Cài đặt Database:**
-    * Tạo một database trong MySQL với tên là `categories_db`.
+    * Tạo một database trong MySQL "file database nằm trong mã nguồn.".
     * Chạy câu lệnh SQL sau để tạo bảng và dữ liệu mẫu:
-        ```sql
-        CREATE TABLE categories (
+        ```sql - bảng demo mẫu
+        CREATE TABLE bangmau (
             id INT AUTO_INCREMENT PRIMARY KEY,
             name VARCHAR(255) NOT NULL
         );
