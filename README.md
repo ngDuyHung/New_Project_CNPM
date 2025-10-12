@@ -1,229 +1,138 @@
-Of course\! Here is the updated `.md` file content with the team members section added.
-
-# React + Node.js + MySQL Project
-
-A full-stack web application using React, Node.js, and MySQL.
-
-## Project Name: VocabMaster
-
-[cite\_start]VocabMaster is an intelligent English learning web application designed to provide a modern, interactive platform[cite: 4, 5]. [cite\_start]It integrates various practice formats like Flashcards, Fill-in-the-blanks, Listening, and Writing exercises[cite: 5]. [cite\_start]The application leverages Artificial Intelligence (AI) to personalize learning content, provide instant feedback, and generate exercises automatically[cite: 6, 12].
-
------
-
-## Team Members
-
-[cite\_start]This project was developed by a team of 14 dedicated members[cite: 14].
-
-| Name | Student ID | Role |
-| :--- | :--- | :--- |
-| Nguyễn Duy Hùng | DH52200731 | [cite\_start]Team Leader / Backend Developer [cite: 15, 20] |
-| Trang Mạnh Phúc | DH52203917 | [cite\_start]Backend Developer [cite: 20] |
-| Võ Hoàng Trường | DH52201692 | [cite\_start]Backend Developer [cite: 20] |
-| Nguyễn Tiến Đạt | DH52200487 | [cite\_start]Backend Developer [cite: 20] |
-| Lâm Thanh Hiếu | DH52200678 | [cite\_start]Backend Developer [cite: 20] |
-| Trần Huy An | DH52200314 | [cite\_start]Frontend Developer [cite: 20] |
-| Trương Ngọc Đỉnh | DH52200507 | [cite\_start]Frontend Developer [cite: 20] |
-| Nguyễn Hoàng Phúc | DH52201242 | [cite\_start]Frontend Developer [cite: 20] |
-| Nguyễn Thành Trung | DH52201670 | [cite\_start]Frontend Developer [cite: 20] |
-| Châu Quốc Kiệt | DH52113613 | [cite\_start]Frontend Developer [cite: 20] |
-| Nguyễn Hữu Khanh | DH52200857 | [cite\_start]Design, Slides, Reporting [cite: 20] |
-| Hồ Khôi Phục | DH52201264 | [cite\_start]Design, Slides, Reporting [cite: 20] |
-| Nguyễn Tiến Đạt | DH52200486 | [cite\_start]Design, Slides, Reporting [cite: 20] |
-| Trần Quốc Khánh | DH52200887 | [cite\_start]Code Support, QA/Testing [cite: 20] |
-
------
-
-## Project Structure
-
-```
-.
-├── frontend/         # React frontend application
-└── backend/          # Node.js backend application
-```
-
-## Setup Instructions
-
-### Prerequisites
-
-  - Node.js (v14 or higher)
-  - MySQL (v8.0 or higher)
-  - npm or yarn
-
-### Database Setup
-
-1.  Create a MySQL database named `categories_db`
-2.  Run the following SQL query to create the categories table:
-
-<!-- end list -->
-
-````sql
-
-
-### Backend Setup
-1. Navigate to the backend directory:
-```bash
-cd backend
-````
-
-2.  Install dependencies:
-
-<!-- end list -->
-
-```bash
-npm install
-```
-
-3.  Create a .env file with your MySQL configuration:
-
-<!-- end list -->
-
-```
-DB_HOST=localhost
-DB_USER=your_username
-DB_PASSWORD=your_password
-DB_NAME=categories_db
-PORT=5000
-```
-
-4.  Start the server:
-
-<!-- end list -->
-
-```bash
-npm start
-```
-
-### Frontend Setup
-
-1.  Navigate to the frontend directory:
-
-<!-- end list -->
-
-```bash
-cd frontend
-```
-
-2.  Install dependencies:
-
-<!-- end list -->
-
-```bash
-npm install
-```
-
-3.  Start the development server:
-
-<!-- end list -->
-
-```bash
-npm start
-```
-
-The application will be available at http://localhost:3000
-
------
-
-# Hướng dẫn Cài Đặt (Vietnamese)
-
-## Cấu Trúc Dự Án
-
-```
-.
-├── frontend/         # Ứng dụng React frontend
-└── backend/          # Ứng dụng Node.js backend
-```
-
-## Hướng Dẫn Cài Đặt
-
-### Yêu Cầu
-
-  - Node.js (v14 trở lên)
-  - MySQL (v8.0 trở lên)
-  - npm hoặc yarn
-
-### Cài Đặt Database
-
-1.  Tạo database MySQL tên `categories_db`
-2.  Chạy câu lệnh SQL sau để tạo bảng categories:
-
-<!-- end list -->
-
-```sql
-CREATE TABLE categories (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(255) NOT NULL
-);
-
-INSERT INTO categories (name) VALUES 
-    ('A'),
-    ('B'),
-    ('C'),
-    ('D'),
-    ('E');
-```
-
-### Cài Đặt Backend
-
-1.  Di chuyển vào thư mục backend:
-
-<!-- end list -->
-
-```bash
-cd backend
-```
-
-2.  Cài đặt các dependencies:
-
-<!-- end list -->
-
-```bash
-npm install
-```
-
-3.  Tạo file .env với cấu hình MySQL:
-
-<!-- end list -->
-
-```
-DB_HOST=localhost
-DB_USER=your_username
-DB_PASSWORD=your_password
-DB_NAME=categories_db
-PORT=5000
-```
-
-4.  Khởi động server:
-
-<!-- end list -->
-
-```bash
-npm start
-```
-
-### Cài Đặt Frontend
-
-1.  Di chuyển vào thư mục frontend:
-
-<!-- end list -->
-
-```bash
-cd frontend
-```
-
-2.  Cài đặt các dependencies:
-
-<!-- end list -->
-
-```bash
-npm install
-```
-
-3.  Khởi động development server:
-
-<!-- end list -->
-
-```bash
-npm start
-```
-
-Ứng dụng sẽ chạy tại địa chỉ http://localhost:3000
+<div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; border: 1px solid #e1e4e8; border-radius: 10px; padding: 25px; background-color: #f6f8fa;">
+
+<div align="center">
+  <h1 style="color: #0366d6; border-bottom: 2px solid #0366d6; padding-bottom: 10px;">
+    🚀 VocabMaster - Ứng dụng Học Tiếng Anh Thông Minh 🚀
+  </h1>
+  <p style="font-size: 1.2em; color: #586069;">
+    Một nền tảng học tiếng Anh trực tuyến hiện đại, tích hợp Trí tuệ nhân tạo (AI) để cá nhân hóa lộ trình học tập của bạn.
+  </p>
+</div>
+
+---
+
+## ✨ **Tính Năng Nổi Bật**
+
+<table width="100%">
+  <tr style="vertical-align: top;">
+    <td width="50%" style="padding: 10px;">
+      <h4 style="color: #0366d6;">🤖 Học Tập với AI</h4>
+      <p>Tự động tạo từ vựng và 4 dạng bài tập (Flashcard, Điền khuyết, Nghe, Viết) dựa trên chủ đề bạn chọn.</p>
+    </td>
+    <td width="50%" style="padding: 10px;">
+      <h4 style="color: #0366d6;">📚 Từ điển Tích hợp</h4>
+      <p>Tra cứu từ vựng nhanh chóng và lưu lại vào danh sách cá nhân để ôn tập.</p>
+    </td>
+  </tr>
+  <tr style="vertical-align: top;">
+    <td width="50%" style="padding: 10px;">
+      <h4 style="color: #0366d6;">📊 Theo dõi Tiến độ</h4>
+      <p>Xem lại lịch sử, số từ đã học và các danh hiệu đã đạt được để có thêm động lực.</p>
+    </td>
+    <td width="50%" style="padding: 10px;">
+      <h4 style="color: #0366d6;">💬 Chatbot AI (Sắp ra mắt)</h4>
+      <p>Trò chuyện với AI để luyện tập kỹ năng giao tiếp theo chủ đề một cách tự nhiên.</p>
+    </td>
+  </tr>
+</table>
+
+---
+
+## 🛠️ **Công Nghệ Sử Dụng**
+
+| Lĩnh vực | Công nghệ |
+| :--- | :--- |
+| **Frontend** | `React.js`, `Material-UI`, `Bootstrap` |
+| **Backend** | `Node.js`, `Express.js` |
+| **Database** | `MySQL` |
+| **Xác thực** | `JSON Web Tokens (JWT)` |
+| **AI** | `Mô hình sinh câu hỏi`, `Google Text-to-Speech`|
+| **Quản lý** | `Agile/Scrum`, `Jira`, `ClickUp` |
+
+---
+
+## 👨‍💻 **Thành Viên Nhóm Phát Triển**
+
+<details>
+  <summary><strong>Nhấn vào đây để xem danh sách thành viên</strong></summary>
+  <table width="100%" style="margin-top: 15px; border-collapse: collapse;">
+    <thead>
+      <tr style="background-color: #0366d6; color: white;">
+        <th style="padding: 10px; text-align: left;">Tên</th>
+        <th style="padding: 10px; text-align: left;">MSSV</th>
+        <th style="padding: 10px; text-align: left;">Vai trò</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="border-bottom: 1px solid #e1e4e8;">
+        <td style="padding: 10px;"><strong>Nguyễn Duy Hùng</strong></td>
+        <td style="padding: 10px;"><strong>DH52200731</strong></td>
+        <td style="padding: 10px;"><strong>Team Leader / Backend</strong></td>
+      </tr>
+      <tr style="background-color: #f6f8fa; border-bottom: 1px solid #e1e4e8;">
+        <td style="padding: 10px;">Trang Mạnh Phúc</td>
+        <td style="padding: 10px;">DH52203917</td>
+        <td style="padding: 10px;">Backend Developer</td>
+      </tr>
+      <tr style="border-bottom: 1px solid #e1e4e8;">
+        <td style="padding: 10px;">Võ Hoàng Trường</td>
+        <td style="padding: 10px;">DH52201692</td>
+        <td style="padding: 10px;">Backend Developer</td>
+      </tr>
+      <tr style="background-color: #f6f8fa; border-bottom: 1px solid #e1e4e8;">
+        <td style="padding: 10px;">Trần Huy An</td>
+        <td style="padding: 10px;">DH52200314</td>
+        <td style="padding: 10px;">Frontend Developer</td>
+      </tr>
+    </tbody>
+  </table>
+</details>
+
+---
+
+## 🚀 **Hướng Dẫn Cài Đặt (Getting Started)**
+
+### **📋 Yêu Cầu (Prerequisites)**
+* Node.js (v14+)
+* MySQL (v8.0+)
+* `npm` hoặc `yarn`
+
+### **⚙️ Các Bước Cài Đặt (Installation)**
+
+1.  **Clone a repository về máy:**
+    ```bash
+    git clone <your-repository-link>
+    cd <project-folder>
+    ```
+
+2.  **💾 Cài đặt Database:**
+    * Tạo database trong MySQL với tên `categories_db`.
+    * Chạy câu lệnh SQL sau:
+        ```sql
+        CREATE TABLE categories (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            name VARCHAR(255) NOT NULL
+        );
+        INSERT INTO categories (name) VALUES ('A'), ('B'), ('C');
+        ```
+
+3.  **🔌 Cài đặt Backend:**
+    * Đi đến thư mục `backend`, cài đặt dependencies và khởi động server:
+        ```bash
+        cd backend
+        npm install
+        # Tạo file .env với thông tin database của bạn
+        npm start
+        ```
+    * *Server sẽ chạy tại `http://localhost:5000`*
+
+4.  **🖥️ Cài đặt Frontend:**
+    * Mở terminal mới, đi đến thư mục `frontend`, cài đặt dependencies và khởi động:
+        ```bash
+        cd frontend
+        npm install
+        npm start
+        ```
+    * *Ứng dụng sẽ chạy tại `http://localhost:3000`*
+
+</div>
