@@ -1,5 +1,9 @@
 <h4>Link Full tài liệu quá trình thực hiện:https://drive.google.com/drive/folders/1xFzDw6LzKU67lcRZYDfwRRcAjF9iRBJx?usp=sharing</h4>
 
+Tài khoản đăng nhập web để test: 
+Username: admin@gmail.com
+Password: admin
+
 <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; border: 1px solid #e1e4e8; border-radius: 10px; padding: 25px; background-color: #f6f8fa;">
 
 <div align="center">
