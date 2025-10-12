@@ -48,6 +48,7 @@
 | **Auth** | `JSON Web Tokens (JWT)`                           |
 | **AI** | `Question Generation Models`, `Google Text-to-Speech` |
 | **Management**| `Agile/Scrum`, `Jira`, `ClickUp`                  |
+| **Deployment**| `Vercel (Frontend)`, `Render (Backend)`                  |
 
 ---
 
